@@ -1,14 +1,15 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { nitro } from "nitro/vite"; // 1. Add this import at the top
 
 export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
-    // Move the nitro configuration here
-    nitro: {
-      preset: "vercel",
-    },
   },
   vite: {
-    // Keep any other actual Vite-specific settings here if needed
+    plugins: [
+      nitro({
+        preset: "vercel", // 2. Explicitly force Nitro to build for Vercel here
+      }),
+    ],
   },
 });
