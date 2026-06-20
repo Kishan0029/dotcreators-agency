@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SendThankYouRouteImport } from './routes/send-thank-you'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SendThankYouRoute = SendThankYouRouteImport.update({
+  id: '/send-thank-you',
+  path: '/send-thank-you',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +25,39 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/send-thank-you': typeof SendThankYouRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/send-thank-you': typeof SendThankYouRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/send-thank-you': typeof SendThankYouRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/send-thank-you'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/send-thank-you'
+  id: '__root__' | '/' | '/send-thank-you'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SendThankYouRoute: typeof SendThankYouRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/send-thank-you': {
+      id: '/send-thank-you'
+      path: '/send-thank-you'
+      fullPath: '/send-thank-you'
+      preLoaderRoute: typeof SendThankYouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SendThankYouRoute: SendThankYouRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
