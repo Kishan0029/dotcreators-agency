@@ -323,7 +323,7 @@ function Index() {
             © 2026 Dot Entertainments
           </div>
           <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
-            Developed by dotlab.in
+            Developed by <a href="https://dotlab.framer.website/" target="_blank" rel="noreferrer" className="underline hover:text-foreground">dotlab.in</a>
           </div>
         </div>
       </footer>
