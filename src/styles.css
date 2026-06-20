@@ -80,6 +80,9 @@
 @layer utilities {
   .font-display { font-family: var(--font-display); }
   .text-balance { text-wrap: balance; }
+  .animate-blink {
+    animation: blink 1.5s ease-in-out infinite;
+  }
   .glass {
     background: linear-gradient(180deg, var(--card), oklch(0.99 0.005 285 / 0.6));
     backdrop-filter: blur(28px) saturate(140%);
@@ -88,5 +91,13 @@
   .grain {
     background-image: radial-gradient(oklch(1 0 0 / 0.04) 1px, transparent 1px);
     background-size: 3px 3px;
+  }
+  @keyframes blink {
+    0%, 40%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
   }
 }

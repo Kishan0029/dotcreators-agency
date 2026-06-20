@@ -152,10 +152,7 @@ function Index() {
               {!submitted ? (
                 <>
                   <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-foreground/[0.03] px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-75" />
-                      <span className="relative h-1.5 w-1.5 rounded-full bg-accent" />
-                    </span>
+                    <span className="block h-1.5 w-1.5 rounded-full bg-accent animate-blink" />
                     Soon · Date to be Announced
                   </div>
                   <h2 className="font-display text-3xl leading-tight sm:text-4xl text-foreground">
@@ -298,9 +295,10 @@ function Index() {
         </div>
 
         <FadeIn delay={0.3}>
-          <div className="mb-4 w-full text-left">
-          
-          </div>
+          <div className="mb-3 text-[11px] uppercase tracking-[0.3em] text-muted-foreground">— Location</div>
+          <h4 className="font-display text-[clamp(2.25rem,4.5vw,3.5rem)] leading-tight tracking-tight">
+            Got confused about the location?
+          </h4>
           <div className="mt-8 rounded-xl overflow-hidden border border-border">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3811.0691469024825!2d74.48878!3d15.820583!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbf650041397155%3A0x4ef0da497e750a93!2sPai%20Convention%20Hall%20and%20Catering!5e0!3m2!1sen!2sin!4v1687123456789"
