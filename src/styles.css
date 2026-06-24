@@ -100,4 +100,36 @@
       opacity: 0.3;
     }
   }
+
+  /* Liquid background - slow, ambient, pointer-events none */
+  .liquid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(30% 30% at 10% 20%, var(--liquid-accent, rgba(100,140,255,0.12)), transparent 40%),
+      radial-gradient(28% 28% at 80% 80%, var(--liquid-aura, rgba(90,200,200,0.12)), transparent 40%),
+      linear-gradient(120deg, rgba(0,0,0,0.02), rgba(255,255,255,0.01));
+    background-size: 120% 120%, 140% 140%, 200% 200%;
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+    filter: blur(28px) saturate(120%);
+    mix-blend-mode: screen;
+    transform: translateZ(0);
+    will-change: background-position;
+    animation: liquid-move 40s linear infinite;
+    opacity: 0.95;
+  }
+
+  @keyframes liquid-move {
+    0% {
+      background-position: 0% 10%, 100% 90%, 50% 50%;
+    }
+    50% {
+      background-position: 100% 50%, 0% 50%, 20% 70%;
+    }
+    100% {
+      background-position: 0% 10%, 100% 90%, 50% 50%;
+    }
+  }
 }

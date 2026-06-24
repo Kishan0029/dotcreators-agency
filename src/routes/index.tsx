@@ -5,8 +5,18 @@ import { MapPin, ArrowRight, Check, X, Loader2 } from "lucide-react";
 import paiLogo from "@/assets/pai-convention.png";
 import dotLogo from "@/assets/logo2026.png";
 import summitLogo from "@/assets/summit-logo.png";
+import unionLogo from "@/assets/Union.png";
+import brand1 from "@/assets/brand1.jpg";
+import brand2 from "@/assets/brand2.jpg";
+import brand3 from "@/assets/brand3.jpg";
+import brand4 from "@/assets/brand4.jpg";
+import brand5 from "@/assets/brand5.jpg";
+import brand6 from "@/assets/brand6.jpg";
+import brand7 from "@/assets/brand7.jpg";
 // Import the Supabase client you created
 import { supabase } from "@/lib/supabaseClient";
+import { MouseImageTrail } from "@/components/MouseImageTrail";
+import LiquidBackground from "@/components/LiquidBackground";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -88,14 +98,20 @@ function Index() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
-      {/* Ambient aura */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute left-1/2 top-[18%] h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-1),_transparent_60%)] blur-3xl" />
-        <div className="absolute left-[20%] top-[60%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-2),_transparent_60%)] blur-3xl" />
-        <div className="absolute right-[10%] top-[80%] h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-1),_transparent_60%)] blur-3xl" />
-        <div className="absolute inset-0 grain opacity-[0.4]" />
-      </div>
+    <MouseImageTrail
+      renderImageBuffer={35}
+      rotationRange={24}
+      images={[brand1, brand2, brand3, brand4, brand5, brand6, brand7,brand1, brand2, brand3, brand4, brand5, brand6, brand7]}
+    >
+      <main className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+        <LiquidBackground />
+        {/* Ambient aura */}
+        <div className="pointer-events-none fixed inset-0 -z-10">
+          <div className="absolute left-1/2 top-[18%] h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-1),_transparent_60%)] blur-3xl" />
+          <div className="absolute left-[20%] top-[60%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-2),_transparent_60%)] blur-3xl" />
+          <div className="absolute right-[10%] top-[80%] h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-1),_transparent_60%)] blur-3xl" />
+          <div className="absolute inset-0 grain opacity-[0.4]" />
+        </div>
 
       {/* Header */}
       <header className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6 sm:px-10 sm:py-8">
@@ -134,7 +150,7 @@ function Index() {
             and build relationships that drive innovation.
           </p>
         </FadeIn>
-        <FadeIn delay={0.25}>
+        <FadeIn delay={0.2}>
           <div className="mt-8 flex items-center gap-4 text-[11px] uppercase tracking-[0.3em] text-muted-foreground/80">
             <span>Connect</span>
             <span className="h-px w-6 bg-border" />
@@ -203,23 +219,33 @@ function Index() {
                         {NICHES.map((n) => <option key={n} value={n} className="bg-card text-foreground">{n}</option>)}
                       </select>
                     </Field>
-                    <button
+                    <motion.button
                       type="submit"
                       disabled={loading}
-                      className="group flex w-full items-center justify-center gap-2 rounded-xl bg-foreground px-4 py-3.5 text-sm font-medium text-primary-foreground transition hover:bg-foreground/90 disabled:bg-foreground/60 mt-2"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="group relative overflow-hidden flex w-full items-center justify-center gap-2 rounded-xl bg-foreground px-4 py-3.5 text-sm font-medium text-primary-foreground transition-colors hover:text-indigo-300 disabled:bg-foreground/60 mt-2"
                     >
-                      {loading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Securing spot...
-                        </>
-                      ) : (
-                        <>
-                          Register for Summit
-                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                        </>
-                      )}
-                    </button>
+                      <div className="relative z-10 flex items-center gap-2">
+                        {loading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Securing spot...
+                          </>
+                        ) : (
+                          <>
+                            Register for Summit
+                            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                          </>
+                        )}
+                      </div>
+                      <motion.span
+                        initial={{ y: "100%" }}
+                        animate={{ y: "-100%" }}
+                        transition={{ repeat: Infinity, repeatType: "mirror", duration: 1, ease: "linear" }}
+                        className="absolute inset-0 z-0 scale-125 bg-gradient-to-t from-indigo-400/0 from-40% via-indigo-400/100 to-indigo-400/0 to-60% opacity-0 transition-opacity group-hover:opacity-100"
+                      />
+                    </motion.button>
                   </form>
                 </>
               ) : (
@@ -340,7 +366,8 @@ function Index() {
         .input::placeholder { color: var(--muted-foreground); opacity: 0.6; }
         .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
       `}</style>
-    </main>
+      </main>
+    </MouseImageTrail>
   );
 }
 
