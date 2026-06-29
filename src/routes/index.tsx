@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useInView, useTransform, useScroll } from "mot
 import { MapPin, ArrowRight, Check, X, Loader2 } from "lucide-react";
 import paiLogo from "@/assets/pai-convention.png";
 import dotLogo from "@/assets/logo2026.png";
+import dotLogoPng from "@/assets/dotlogo.png";
 import summitLogo from "@/assets/summit-logo.png";
 import unionLogo from "@/assets/Union.png";
 import brand1 from "@/assets/brand1.jpg";
@@ -77,7 +78,7 @@ function Index() {
     const handleLoaderComplete = () => {
       setLoaderComplete(true);
     };
-    
+
     window.addEventListener('loader-complete', handleLoaderComplete);
     return () => window.removeEventListener('loader-complete', handleLoaderComplete);
   }, []);
@@ -86,7 +87,7 @@ function Index() {
   async function submitRegistration(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name.trim() || !form.handle.trim() || !email.trim()) return;
-    
+
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -130,7 +131,7 @@ function Index() {
     >
       <main className="relative min-h-screen w-full flex flex-col items-center bg-background text-foreground overflow-x-hidden">
         <LiquidBackground />
-        
+
         {/* Ambient aura */}
         <div className="pointer-events-none fixed inset-0 -z-10">
           <div className="absolute left-1/2 top-[18%] h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-1),_transparent_60%)] blur-3xl" />
@@ -295,9 +296,9 @@ function Index() {
         </section>
 
         {/* Horizontal Experience Slider */}
-        
-        
-  
+
+
+
 
         {/* Venue */}
         <section className="relative z-10 mx-auto w-full max-w-5xl px-6 py-24 sm:py-32">
@@ -313,8 +314,8 @@ function Index() {
                 <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Organized by</div>
                 <div className="mt-3 flex items-center justify-end">
                   <span className="mr-3 text-[13px] font-medium tracking-[0.2em] uppercase">Dot Entertainments</span>
-                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white p-1 shadow-sm border border-border">
-                    <img src={dotLogo} alt="Dot Entertainments" className="h-full w-full object-contain" />
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-white p-1 shadow-sm border border-border">
+                    <img src={dotLogoPng} alt="Dot Entertainments" className="h-full w-full object-contain" />
                   </div>
                 </div>
                 <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
@@ -328,9 +329,9 @@ function Index() {
 
             <FadeIn delay={0.2}>
               <div className="md:pl-2">
-                <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Powered by </div>
+                <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Presented by </div>
                 <div className="mt-3 flex items-center gap-3">
-                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white p-1 shadow-sm border border-border">
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-white p-1 shadow-sm border border-border">
                     <img src={paiLogo} alt="Pai Convention Hall & Catering" className="h-full w-full object-contain" />
                   </div>
                   <span className="text-[13px] font-medium tracking-[0.2em] uppercase">Pai Convention Hall & Catering</span>
@@ -361,7 +362,7 @@ function Index() {
             </div>
             <div className="mt-6 text-center">
               <h2 className="font-serif text-[clamp(2rem,10vw,5rem)] leading-tight tracking-tight font-bold text-foreground whitespace-nowrap">
-              
+
               </h2>
             </div>
           </FadeIn>

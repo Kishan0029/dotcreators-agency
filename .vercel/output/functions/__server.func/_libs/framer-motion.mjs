@@ -1,5 +1,5 @@
 import { a as __toCommonJS, n as __esmMin, o as __toESM, r as __exportAll } from "../_runtime.mjs";
-import { o as require_jsx_runtime, s as require_react } from "./@react-three/drei+[...].mjs";
+import { n as require_jsx_runtime, r as require_react } from "./react+tanstack__react-query.mjs";
 //#region node_modules/framer-motion/dist/es/context/LayoutGroupContext.mjs
 var import_jsx_runtime = require_jsx_runtime();
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
@@ -138,6 +138,12 @@ var millisecondsToSeconds = /* @__NO_SIDE_EFFECTS__ */ (milliseconds) => millise
 //#region node_modules/motion-utils/dist/es/velocity-per-second.mjs
 var velocityPerSecond = /* @__NO_SIDE_EFFECTS__ */ (velocity, frameDuration) => frameDuration ? velocity * (1e3 / frameDuration) : 0;
 //#endregion
+//#region node_modules/motion-utils/dist/es/wrap.mjs
+var wrap = (min, max, v) => {
+	const rangeSize = max - min;
+	return ((v - min) % rangeSize + rangeSize) % rangeSize + min;
+};
+//#endregion
 //#region node_modules/motion-utils/dist/es/easing/cubic-bezier.mjs
 var calcBezier = (t, a1, a2) => (((1 - 3 * a2 + 3 * a1) * t + (3 * a2 - 6 * a1)) * t + 3 * a1) * t;
 var subdivisionPrecision = 1e-7;
@@ -189,6 +195,12 @@ var easeInOut = /*@__PURE__*/ cubicBezier(.42, 0, .58, 1);
 var isEasingArray = /* @__NO_SIDE_EFFECTS__ */ (ease) => {
 	return Array.isArray(ease) && typeof ease[0] !== "number";
 };
+//#endregion
+//#region node_modules/motion-utils/dist/es/easing/utils/get-easing-for-segment.mjs
+/*#__NO_SIDE_EFFECTS__*/
+function getEasingForSegment(easing, i) {
+	return /* @__PURE__ */ isEasingArray(easing) ? easing[wrap(0, easing.length, i)] : easing;
+}
 //#endregion
 //#region node_modules/motion-utils/dist/es/easing/utils/is-bezier-definition.mjs
 var isBezierDefinition = /* @__NO_SIDE_EFFECTS__ */ (easing) => Array.isArray(easing) && typeof easing[0] === "number";
@@ -2525,6 +2537,89 @@ var AsyncMotionValueAnimation = class extends WithPromise {
 	}
 };
 //#endregion
+//#region node_modules/motion-dom/dist/es/animation/GroupAnimation.mjs
+var GroupAnimation = class {
+	constructor(animations) {
+		this.stop = () => this.runAll("stop");
+		this.animations = animations.filter(Boolean);
+	}
+	get finished() {
+		return Promise.all(this.animations.map((animation) => animation.finished));
+	}
+	/**
+	* TODO: Filter out cancelled or stopped animations before returning
+	*/
+	getAll(propName) {
+		return this.animations[0][propName];
+	}
+	setAll(propName, newValue) {
+		for (let i = 0; i < this.animations.length; i++) this.animations[i][propName] = newValue;
+	}
+	attachTimeline(timeline) {
+		const subscriptions = this.animations.map((animation) => animation.attachTimeline(timeline));
+		return () => {
+			subscriptions.forEach((cancel, i) => {
+				cancel && cancel();
+				this.animations[i].stop();
+			});
+		};
+	}
+	get time() {
+		return this.getAll("time");
+	}
+	set time(time) {
+		this.setAll("time", time);
+	}
+	get speed() {
+		return this.getAll("speed");
+	}
+	set speed(speed) {
+		this.setAll("speed", speed);
+	}
+	get state() {
+		return this.getAll("state");
+	}
+	get startTime() {
+		return this.getAll("startTime");
+	}
+	get duration() {
+		return getMax(this.animations, "duration");
+	}
+	get iterationDuration() {
+		return getMax(this.animations, "iterationDuration");
+	}
+	runAll(methodName) {
+		this.animations.forEach((controls) => controls[methodName]());
+	}
+	play() {
+		this.runAll("play");
+	}
+	pause() {
+		this.runAll("pause");
+	}
+	cancel() {
+		this.runAll("cancel");
+	}
+	complete() {
+		this.runAll("complete");
+	}
+};
+function getMax(animations, propName) {
+	let max = 0;
+	for (let i = 0; i < animations.length; i++) {
+		const value = animations[i][propName];
+		if (value !== null && value > max) max = value;
+	}
+	return max;
+}
+//#endregion
+//#region node_modules/motion-dom/dist/es/animation/GroupAnimationWithThen.mjs
+var GroupAnimationWithThen = class extends GroupAnimation {
+	then(onResolve, _onReject) {
+		return this.finished.finally(onResolve).then(() => {});
+	}
+};
+//#endregion
 //#region node_modules/motion-dom/dist/es/animation/utils/calc-child-stagger.mjs
 function calcChildStagger(children, child, delayChildren, staggerChildren = 0, staggerDirection = 1) {
 	const index = Array.from(children).sort((a, b) => a.sortNodePosition(b)).indexOf(child);
@@ -2823,7 +2918,7 @@ function resolveTransition(transition, parentTransition) {
 }
 //#endregion
 //#region node_modules/motion-dom/dist/es/animation/utils/get-value-transition.mjs
-function getValueTransition(transition, key) {
+function getValueTransition$1(transition, key) {
 	const valueTransition = transition?.[key] ?? transition?.["default"] ?? transition;
 	if (valueTransition !== transition) return resolveTransition(valueTransition, transition);
 	return valueTransition;
@@ -2891,7 +2986,7 @@ function isTransitionDefined(transition) {
 //#endregion
 //#region node_modules/motion-dom/dist/es/animation/interfaces/motion-value.mjs
 var animateMotionValue = (name, value, target, transition = {}, element, isHandoff) => (onComplete) => {
-	const valueTransition = getValueTransition(transition, name) || {};
+	const valueTransition = getValueTransition$1(transition, name) || {};
 	/**
 	* Most transition values are currently completely overwritten by value-specific
 	* transitions. In the future it'd be nicer to blend these transitions. But for now
@@ -3140,7 +3235,7 @@ function animateTarget(visualElement, targetAndTransition, { delay = 0, transiti
 		if (valueTarget === void 0 || animationTypeState && shouldBlockAnimation(animationTypeState, key)) continue;
 		const valueTransition = {
 			delay,
-			...getValueTransition(transition || {}, key)
+			...getValueTransition$1(transition || {}, key)
 		};
 		if (skipAnimations) valueTransition.skipAnimations = true;
 		/**
@@ -4989,6 +5084,39 @@ var HTMLVisualElement = class extends DOMVisualElement {
 	}
 };
 //#endregion
+//#region node_modules/motion-dom/dist/es/render/object/ObjectVisualElement.mjs
+function isObjectKey(key, object) {
+	return key in object;
+}
+var ObjectVisualElement = class extends VisualElement {
+	constructor() {
+		super(...arguments);
+		this.type = "object";
+	}
+	readValueFromInstance(instance, key) {
+		if (isObjectKey(key, instance)) {
+			const value = instance[key];
+			if (typeof value === "string" || typeof value === "number") return value;
+		}
+	}
+	getBaseTargetFromProps() {}
+	removeValueFromRenderState(key, renderState) {
+		delete renderState.output[key];
+	}
+	measureInstanceViewportBox() {
+		return createBox();
+	}
+	build(renderState, latestValues) {
+		Object.assign(renderState.output, latestValues);
+	}
+	renderInstance(instance, { output }) {
+		Object.assign(instance, output);
+	}
+	sortInstanceNodePosition() {
+		return 0;
+	}
+};
+//#endregion
 //#region node_modules/motion-dom/dist/es/render/svg/utils/path.mjs
 var dashKeys = {
 	offset: "stroke-dashoffset",
@@ -6140,7 +6268,7 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
 						this.resumingFrom.resumingFrom = void 0;
 					}
 					const animationOptions = {
-						...getValueTransition(layoutTransition, "layout"),
+						...getValueTransition$1(layoutTransition, "layout"),
 						onPlay: onLayoutAnimationStart,
 						onComplete: onLayoutAnimationComplete
 					};
@@ -9293,6 +9421,569 @@ var motion = /*@__PURE__*/ createMotionProxy({
 	...layout
 }, createDomVisualElement);
 //#endregion
+//#region node_modules/framer-motion/dist/es/utils/use-unmount-effect.mjs
+function useUnmountEffect(callback) {
+	return (0, import_react.useEffect)(() => () => callback(), []);
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/utils/reduced-motion/use-reduced-motion.mjs
+/**
+* A hook that returns `true` if we should be using reduced motion based on the current device's Reduced Motion setting.
+*
+* This can be used to implement changes to your UI based on Reduced Motion. For instance, replacing motion-sickness inducing
+* `x`/`y` animations with `opacity`, disabling the autoplay of background videos, or turning off parallax motion.
+*
+* It will actively respond to changes and re-render your components with the latest setting.
+*
+* ```jsx
+* export function Sidebar({ isOpen }) {
+*   const shouldReduceMotion = useReducedMotion()
+*   const closedX = shouldReduceMotion ? 0 : "-100%"
+*
+*   return (
+*     <motion.div animate={{
+*       opacity: isOpen ? 1 : 0,
+*       x: isOpen ? 0 : closedX
+*     }} />
+*   )
+* }
+* ```
+*
+* @return boolean
+*
+* @public
+*/
+function useReducedMotion() {
+	/**
+	* Lazy initialisation of prefersReducedMotion
+	*/
+	!hasReducedMotionListener.current && initPrefersReducedMotion();
+	const [shouldReduceMotion] = (0, import_react.useState)(prefersReducedMotion.current);
+	/**
+	* TODO See if people miss automatically updating shouldReduceMotion setting
+	*/
+	return shouldReduceMotion;
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/utils/reduced-motion/use-reduced-motion-config.mjs
+function useReducedMotionConfig() {
+	const reducedMotionPreference = useReducedMotion();
+	const { reducedMotion } = (0, import_react.useContext)(MotionConfigContext);
+	if (reducedMotion === "never") return false;
+	else if (reducedMotion === "always") return true;
+	else return reducedMotionPreference;
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/utils/is-dom-keyframes.mjs
+function isDOMKeyframes(keyframes) {
+	return typeof keyframes === "object" && !Array.isArray(keyframes);
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/animate/resolve-subjects.mjs
+function resolveSubjects(subject, keyframes, scope, selectorCache) {
+	if (subject == null) return [];
+	if (typeof subject === "string" && isDOMKeyframes(keyframes)) return resolveElements(subject, scope, selectorCache);
+	else if (subject instanceof NodeList) return Array.from(subject);
+	else if (Array.isArray(subject)) return subject.filter((s) => s != null);
+	else return [subject];
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/sequence/utils/calc-repeat-duration.mjs
+function calculateRepeatDuration(duration, repeat, repeatDelay) {
+	return duration * (repeat + 1) + repeatDelay * repeat;
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/sequence/utils/calc-time.mjs
+/**
+* Given a absolute or relative time definition and current/prev time state of the sequence,
+* calculate an absolute time for the next keyframes.
+*/
+function calcNextTime(current, next, prev, labels) {
+	if (typeof next === "number") return next;
+	else if (next.startsWith("-") || next.startsWith("+")) return Math.max(0, current + parseFloat(next));
+	else if (next === "<") return prev;
+	else if (next.startsWith("<")) return Math.max(0, prev + parseFloat(next.slice(1)));
+	else return labels.get(next) ?? current;
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/sequence/utils/edit.mjs
+function eraseKeyframes(sequence, startTime, endTime) {
+	for (let i = 0; i < sequence.length; i++) {
+		const keyframe = sequence[i];
+		if (keyframe.at > startTime && keyframe.at < endTime) {
+			removeItem(sequence, keyframe);
+			i--;
+		}
+	}
+}
+function addKeyframes(sequence, keyframes, easing, offset, startTime, endTime) {
+	/**
+	* Erase every existing value between currentTime and targetTime,
+	* this will essentially splice this timeline into any currently
+	* defined ones.
+	*/
+	eraseKeyframes(sequence, startTime, endTime);
+	for (let i = 0; i < keyframes.length; i++) sequence.push({
+		value: keyframes[i],
+		at: mixNumber$1(startTime, endTime, offset[i]),
+		easing: /* @__PURE__ */ getEasingForSegment(easing, i)
+	});
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/sequence/utils/normalize-times.mjs
+/**
+* Take an array of times that represent repeated keyframes. For instance
+* if we have original times of [0, 0.5, 1] then our repeated times will
+* be [0, 0.5, 1, 1, 1.5, 2]. Loop over the times and scale them back
+* down to a 0-1 scale.
+*
+* `repeatDelayUnits` is the repeatDelay expressed in units of a single
+* iteration's duration, so the total span equals `(repeat + 1) + repeat * repeatDelayUnits`.
+*/
+function normalizeTimes(times, repeat, repeatDelayUnits = 0) {
+	const totalUnits = repeat + 1 + repeat * repeatDelayUnits;
+	for (let i = 0; i < times.length; i++) times[i] = times[i] / totalUnits;
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/sequence/utils/sort.mjs
+function compareByTime(a, b) {
+	if (a.at === b.at) {
+		if (a.value === null) return 1;
+		if (b.value === null) return -1;
+		return 0;
+	} else return a.at - b.at;
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/sequence/create.mjs
+var defaultSegmentEasing = "easeInOut";
+var MAX_REPEAT = 20;
+function createAnimationsFromSequence(sequence, { defaultTransition = {}, ...sequenceTransition } = {}, scope, generators) {
+	const defaultDuration = defaultTransition.duration || .3;
+	const animationDefinitions = /* @__PURE__ */ new Map();
+	const sequences = /* @__PURE__ */ new Map();
+	const elementCache = {};
+	const timeLabels = /* @__PURE__ */ new Map();
+	let prevTime = 0;
+	let currentTime = 0;
+	let totalDuration = 0;
+	/**
+	* Build the timeline by mapping over the sequence array and converting
+	* the definitions into keyframes and offsets with absolute time values.
+	* These will later get converted into relative offsets in a second pass.
+	*/
+	for (let i = 0; i < sequence.length; i++) {
+		const segment = sequence[i];
+		/**
+		* If this is a timeline label, mark it and skip the rest of this iteration.
+		*/
+		if (typeof segment === "string") {
+			timeLabels.set(segment, currentTime);
+			continue;
+		} else if (!Array.isArray(segment)) {
+			timeLabels.set(segment.name, calcNextTime(currentTime, segment.at, prevTime, timeLabels));
+			continue;
+		}
+		let [subject, keyframes, transition = {}] = segment;
+		/**
+		* If a relative or absolute time value has been specified we need to resolve
+		* it in relation to the currentTime.
+		*/
+		if (transition.at !== void 0) currentTime = calcNextTime(currentTime, transition.at, prevTime, timeLabels);
+		/**
+		* Keep track of the maximum duration in this definition. This will be
+		* applied to currentTime once the definition has been parsed.
+		*/
+		let maxDuration = 0;
+		const resolveValueSequence = (valueKeyframes, valueTransition, valueSequence, elementIndex = 0, numSubjects = 0) => {
+			const valueKeyframesAsList = keyframesAsList(valueKeyframes);
+			const { delay = 0, times = defaultOffset(valueKeyframesAsList), type = defaultTransition.type || "keyframes", repeat, repeatType, repeatDelay = 0, ...remainingTransition } = valueTransition;
+			let { ease = defaultTransition.ease || "easeOut", duration } = valueTransition;
+			/**
+			* Resolve stagger() if defined.
+			*/
+			const calculatedDelay = typeof delay === "function" ? delay(elementIndex, numSubjects) : delay;
+			/**
+			* If this animation should and can use a spring, generate a spring easing function.
+			*/
+			const numKeyframes = valueKeyframesAsList.length;
+			const createGenerator = isGenerator(type) ? type : generators?.[type || "keyframes"];
+			if (numKeyframes <= 2 && createGenerator) {
+				/**
+				* As we're creating an easing function from a spring,
+				* ideally we want to generate it using the real distance
+				* between the two keyframes. However this isn't always
+				* possible - in these situations we use 0-100.
+				*/
+				let absoluteDelta = 100;
+				if (numKeyframes === 2 && isNumberKeyframesArray(valueKeyframesAsList)) {
+					const delta = valueKeyframesAsList[1] - valueKeyframesAsList[0];
+					absoluteDelta = Math.abs(delta);
+				}
+				const springTransition = {
+					...defaultTransition,
+					...remainingTransition
+				};
+				if (duration !== void 0) springTransition.duration = /* @__PURE__ */ secondsToMilliseconds(duration);
+				const springEasing = createGeneratorEasing(springTransition, absoluteDelta, createGenerator);
+				ease = springEasing.ease;
+				duration = springEasing.duration;
+			}
+			duration ?? (duration = defaultDuration);
+			const startTime = currentTime + calculatedDelay;
+			/**
+			* If there's only one time offset of 0, fill in a second with length 1
+			*/
+			if (times.length === 1 && times[0] === 0) times[1] = 1;
+			/**
+			* Fill out if offset if fewer offsets than keyframes
+			*/
+			const remainder = times.length - valueKeyframesAsList.length;
+			remainder > 0 && fillOffset(times, remainder);
+			/**
+			* If only one value has been set, ie [1], push a null to the start of
+			* the keyframe array. This will let us mark a keyframe at this point
+			* that will later be hydrated with the previous value.
+			*/
+			valueKeyframesAsList.length === 1 && valueKeyframesAsList.unshift(null);
+			/**
+			* Segments can't express `repeat: Infinity` or very large
+			* counts — they'd leave dead time after the segment or
+			* explode the keyframe array. Ignore with a warning.
+			*/
+			if (repeat) `${repeat}${MAX_REPEAT}`;
+			if (repeat && repeat < MAX_REPEAT) {
+				/**
+				* Express repeatDelay in units of a single iteration's duration
+				* so it can be added to the per-iteration time offsets below
+				* before they're normalized to 0-1.
+				*/
+				const repeatDelayUnits = duration > 0 ? repeatDelay / duration : 0;
+				duration = calculateRepeatDuration(duration, repeat, repeatDelay);
+				const originalKeyframes = [...valueKeyframesAsList];
+				const originalTimes = [...times];
+				ease = Array.isArray(ease) ? [...ease] : [ease];
+				const originalEase = [...ease];
+				/**
+				* For reverse/mirror, alternate iterations play the segment
+				* backwards. mirror matches JSAnimation's mirroredGenerator:
+				* reversed keyframes, easings unchanged. reverse matches
+				* JSAnimation's iterationProgress = 1 - p: reversed
+				* keyframes, easing array reversed AND each function easing
+				* mapped through reverseEasing (string easings unchanged —
+				* they're resolved later by the keyframes engine).
+				*/
+				const isFlipping = repeatType === "reverse" || repeatType === "mirror";
+				let flippedKeyframes = originalKeyframes;
+				let flippedEases = originalEase;
+				if (isFlipping) {
+					flippedKeyframes = [...originalKeyframes].reverse();
+					if (repeatType === "reverse") flippedEases = [...originalEase].reverse().map((e) => typeof e === "function" ? /* @__PURE__ */ reverseEasing(e) : e);
+				}
+				for (let repeatIndex = 0; repeatIndex < repeat; repeatIndex++) {
+					const isFlipped = isFlipping && repeatIndex % 2 === 0;
+					const iterKeyframes = isFlipped ? flippedKeyframes : originalKeyframes;
+					const iterEase = isFlipped ? flippedEases : originalEase;
+					const iterStartOffset = (repeatIndex + 1) * (1 + repeatDelayUnits);
+					/**
+					* If repeatDelay is set, hold the previous iteration's
+					* final value through the delay by inserting a keyframe
+					* at the moment the next iteration begins.
+					*/
+					if (repeatDelayUnits > 0) {
+						valueKeyframesAsList.push(valueKeyframesAsList[valueKeyframesAsList.length - 1]);
+						times.push(iterStartOffset);
+						ease.push("linear");
+					}
+					valueKeyframesAsList.push(...iterKeyframes);
+					for (let keyframeIndex = 0; keyframeIndex < iterKeyframes.length; keyframeIndex++) {
+						times.push(originalTimes[keyframeIndex] + iterStartOffset);
+						ease.push(keyframeIndex === 0 ? "linear" : /* @__PURE__ */ getEasingForSegment(iterEase, keyframeIndex - 1));
+					}
+				}
+				normalizeTimes(times, repeat, repeatDelayUnits);
+			}
+			const targetTime = startTime + duration;
+			/**
+			* Add keyframes, mapping offsets to absolute time.
+			*/
+			addKeyframes(valueSequence, valueKeyframesAsList, ease, times, startTime, targetTime);
+			maxDuration = Math.max(calculatedDelay + duration, maxDuration);
+			totalDuration = Math.max(targetTime, totalDuration);
+		};
+		if (isMotionValue(subject)) {
+			const subjectSequence = getSubjectSequence(subject, sequences);
+			resolveValueSequence(keyframes, transition, getValueSequence("default", subjectSequence));
+		} else {
+			const subjects = resolveSubjects(subject, keyframes, scope, elementCache);
+			const numSubjects = subjects.length;
+			/**
+			* For every element in this segment, process the defined values.
+			*/
+			for (let subjectIndex = 0; subjectIndex < numSubjects; subjectIndex++) {
+				/**
+				* Cast necessary, but we know these are of this type
+				*/
+				keyframes = keyframes;
+				transition = transition;
+				const thisSubject = subjects[subjectIndex];
+				const subjectSequence = getSubjectSequence(thisSubject, sequences);
+				for (const key in keyframes) resolveValueSequence(keyframes[key], getValueTransition(transition, key), getValueSequence(key, subjectSequence), subjectIndex, numSubjects);
+			}
+		}
+		prevTime = currentTime;
+		currentTime += maxDuration;
+	}
+	/**
+	* For every element and value combination create a new animation.
+	*/
+	sequences.forEach((valueSequences, element) => {
+		for (const key in valueSequences) {
+			const valueSequence = valueSequences[key];
+			/**
+			* Arrange all the keyframes in ascending time order.
+			*/
+			valueSequence.sort(compareByTime);
+			const keyframes = [];
+			const valueOffset = [];
+			const valueEasing = [];
+			/**
+			* For each keyframe, translate absolute times into
+			* relative offsets based on the total duration of the timeline.
+			*/
+			for (let i = 0; i < valueSequence.length; i++) {
+				const { at, value, easing } = valueSequence[i];
+				keyframes.push(value);
+				valueOffset.push(/* @__PURE__ */ progress(0, totalDuration, at));
+				valueEasing.push(easing || "easeOut");
+			}
+			/**
+			* If the first keyframe doesn't land on offset: 0
+			* provide one by duplicating the initial keyframe. This ensures
+			* it snaps to the first keyframe when the animation starts.
+			*/
+			if (valueOffset[0] !== 0) {
+				valueOffset.unshift(0);
+				keyframes.unshift(keyframes[0]);
+				valueEasing.unshift(defaultSegmentEasing);
+			}
+			/**
+			* If the last keyframe doesn't land on offset: 1
+			* provide one with a null wildcard value. This will ensure it
+			* stays static until the end of the animation.
+			*/
+			if (valueOffset[valueOffset.length - 1] !== 1) {
+				valueOffset.push(1);
+				keyframes.push(null);
+			}
+			if (!animationDefinitions.has(element)) animationDefinitions.set(element, {
+				keyframes: {},
+				transition: {}
+			});
+			const definition = animationDefinitions.get(element);
+			definition.keyframes[key] = keyframes;
+			/**
+			* Exclude `type` from defaultTransition since springs have been
+			* converted to duration-based easing functions in resolveValueSequence.
+			* Including `type: "spring"` would cause JSAnimation to error when
+			* the merged keyframes array has more than 2 keyframes.
+			*/
+			const { type: _type, ...remainingDefaultTransition } = defaultTransition;
+			definition.transition[key] = {
+				...remainingDefaultTransition,
+				duration: totalDuration,
+				ease: valueEasing,
+				times: valueOffset,
+				...sequenceTransition
+			};
+		}
+	});
+	return animationDefinitions;
+}
+function getSubjectSequence(subject, sequences) {
+	!sequences.has(subject) && sequences.set(subject, {});
+	return sequences.get(subject);
+}
+function getValueSequence(name, sequences) {
+	if (!sequences[name]) sequences[name] = [];
+	return sequences[name];
+}
+function keyframesAsList(keyframes) {
+	return Array.isArray(keyframes) ? keyframes : [keyframes];
+}
+function getValueTransition(transition, key) {
+	return transition && transition[key] ? {
+		...transition,
+		...transition[key]
+	} : { ...transition };
+}
+var isNumber = (keyframe) => typeof keyframe === "number";
+var isNumberKeyframesArray = (keyframes) => keyframes.every(isNumber);
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/utils/create-visual-element.mjs
+function createDOMVisualElement(element) {
+	const options = {
+		presenceContext: null,
+		props: {},
+		visualState: {
+			renderState: {
+				transform: {},
+				transformOrigin: {},
+				style: {},
+				vars: {},
+				attrs: {}
+			},
+			latestValues: {}
+		}
+	};
+	const node = isSVGElement(element) && !isSVGSVGElement(element) ? new SVGVisualElement(options) : new HTMLVisualElement(options);
+	node.mount(element);
+	visualElementStore.set(element, node);
+}
+function createObjectVisualElement(subject) {
+	const node = new ObjectVisualElement({
+		presenceContext: null,
+		props: {},
+		visualState: {
+			renderState: { output: {} },
+			latestValues: {}
+		}
+	});
+	node.mount(subject);
+	visualElementStore.set(subject, node);
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/animate/subject.mjs
+function isSingleValue(subject, keyframes) {
+	return isMotionValue(subject) || typeof subject === "number" || typeof subject === "string" && !isDOMKeyframes(keyframes);
+}
+/**
+* Implementation
+*/
+function animateSubject(subject, keyframes, options, scope) {
+	const animations = [];
+	if (isSingleValue(subject, keyframes)) animations.push(animateSingleValue(subject, isDOMKeyframes(keyframes) ? keyframes.default || keyframes : keyframes, options ? options.default || options : options));
+	else {
+		if (subject == null) return animations;
+		const subjects = resolveSubjects(subject, keyframes, scope);
+		const numSubjects = subjects.length;
+		for (let i = 0; i < numSubjects; i++) {
+			const thisSubject = subjects[i];
+			const createVisualElement = thisSubject instanceof Element ? createDOMVisualElement : createObjectVisualElement;
+			if (!visualElementStore.has(thisSubject)) createVisualElement(thisSubject);
+			const visualElement = visualElementStore.get(thisSubject);
+			const transition = { ...options };
+			/**
+			* Resolve stagger function if provided.
+			*/
+			if ("delay" in transition && typeof transition.delay === "function") transition.delay = transition.delay(i, numSubjects);
+			animations.push(...animateTarget(visualElement, {
+				...keyframes,
+				transition
+			}, {}));
+		}
+	}
+	return animations;
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/animate/sequence.mjs
+function animateSequence(sequence, options, scope) {
+	const animations = [];
+	createAnimationsFromSequence(sequence.map((segment) => {
+		if (Array.isArray(segment) && typeof segment[0] === "function") {
+			const callback = segment[0];
+			const mv = motionValue(0);
+			mv.on("change", callback);
+			if (segment.length === 1) return [mv, [0, 1]];
+			else if (segment.length === 2) return [
+				mv,
+				[0, 1],
+				segment[1]
+			];
+			else return [
+				mv,
+				segment[1],
+				segment[2]
+			];
+		}
+		return segment;
+	}), options, scope, { spring }).forEach(({ keyframes, transition }, subject) => {
+		animations.push(...animateSubject(subject, keyframes, transition));
+	});
+	return animations;
+}
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/animate/index.mjs
+function isSequence(value) {
+	return Array.isArray(value) && value.some(Array.isArray);
+}
+/**
+* Creates an animation function that is optionally scoped
+* to a specific element.
+*/
+function createScopedAnimate(options = {}) {
+	const { scope, reduceMotion, skipAnimations } = options;
+	/**
+	* Implementation
+	*/
+	function scopedAnimate(subjectOrSequence, optionsOrKeyframes, options) {
+		let animations = [];
+		let animationOnComplete;
+		const inherited = {};
+		if (reduceMotion !== void 0) inherited.reduceMotion = reduceMotion;
+		if (skipAnimations !== void 0) inherited.skipAnimations = skipAnimations;
+		if (isSequence(subjectOrSequence)) {
+			const { onComplete, ...sequenceOptions } = optionsOrKeyframes || {};
+			if (typeof onComplete === "function") animationOnComplete = onComplete;
+			animations = animateSequence(subjectOrSequence, {
+				...inherited,
+				...sequenceOptions
+			}, scope);
+		} else {
+			const { onComplete, ...rest } = options || {};
+			if (typeof onComplete === "function") animationOnComplete = onComplete;
+			animations = animateSubject(subjectOrSequence, optionsOrKeyframes, {
+				...inherited,
+				...rest
+			}, scope);
+		}
+		const animation = new GroupAnimationWithThen(animations);
+		if (animationOnComplete) animation.finished.then(animationOnComplete);
+		if (scope) {
+			scope.animations.push(animation);
+			animation.finished.then(() => {
+				removeItem(scope.animations, animation);
+			});
+		}
+		return animation;
+	}
+	return scopedAnimate;
+}
+createScopedAnimate();
+//#endregion
+//#region node_modules/framer-motion/dist/es/animation/hooks/use-animate.mjs
+function useAnimate() {
+	const scope = useConstant(() => ({
+		current: null,
+		animations: []
+	}));
+	const reduceMotion = useReducedMotionConfig() ?? void 0;
+	const { skipAnimations } = (0, import_react.useContext)(MotionConfigContext);
+	const animate = (0, import_react.useMemo)(() => createScopedAnimate({
+		scope,
+		reduceMotion,
+		skipAnimations
+	}), [
+		scope,
+		reduceMotion,
+		skipAnimations
+	]);
+	useUnmountEffect(() => {
+		scope.animations.forEach((animation) => animation.stop());
+		scope.animations.length = 0;
+	});
+	return [scope, animate];
+}
+//#endregion
 //#region node_modules/framer-motion/dist/es/render/dom/viewport/index.mjs
 var thresholds = {
 	some: 0,
@@ -9353,4 +10044,4 @@ function useInView(ref, { root, margin, amount, once = false, initial = false } 
 	return isInView;
 }
 //#endregion
-export { motion as n, useInView as t };
+export { useAnimate as n, motion as r, useInView as t };
