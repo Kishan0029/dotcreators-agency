@@ -1,4 +1,16 @@
-export function renderErrorPage(): string {
+export function renderErrorPage(error?: unknown): string {
+  let errorDetails = "";
+  if (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const stack = error instanceof Error ? error.stack : "";
+    errorDetails = `
+      <div style="margin-top: 2rem; text-align: left; background: #fee2e2; border: 1px solid #fca5a5; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; max-width: 100%;">
+        <h3 style="color: #991b1b; margin: 0 0 0.5rem; font-size: 0.9rem;">Server-Side Error:</h3>
+        <p style="color: #7f1d1d; font-family: monospace; font-size: 0.8rem; margin: 0 0 0.5rem; white-space: pre-wrap;">${message}</p>
+        ${stack ? `<pre style="color: #7f1d1d; font-size: 0.7rem; margin: 0; white-space: pre-wrap;">${stack}</pre>` : ""}
+      </div>
+    `;
+  }
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -24,7 +36,9 @@ export function renderErrorPage(): string {
         <button class="primary" onclick="location.reload()">Try again</button>
         <a class="secondary" href="/">Go home</a>
       </div>
+      ${errorDetails}
     </div>
   </body>
 </html>`;
 }
+
