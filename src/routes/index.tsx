@@ -18,6 +18,8 @@ import brand7 from "@/assets/brand7.jpg";
 import { supabase } from "@/lib/supabaseClient";
 import { MouseImageTrail } from "@/components/MouseImageTrail";
 import LiquidBackground from "@/components/LiquidBackground";
+import frame14 from "@/assets/Frame 14.png";
+import frame15 from "@/assets/frame 15.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -131,6 +133,24 @@ function Index() {
     >
       <main className="relative min-h-screen w-full flex flex-col items-center bg-background text-foreground overflow-x-hidden">
         <LiquidBackground />
+
+        {/* Background Image (Creators Group) */}
+        <div className="absolute inset-x-0 top-0 z-0 w-full h-[120vh] min-h-[750px] sm:min-h-[900px] pointer-events-none overflow-hidden select-none flex justify-center">
+          {/* PC View: Frame 14 */}
+          <img
+            src={frame14}
+            alt=""
+            className="hidden md:block w-full h-full object-cover object-top opacity-85 select-none"
+          />
+          {/* Mobile View: Frame 15 */}
+          <img
+            src={frame15}
+            alt=""
+            className="block md:hidden w-full h-full object-cover object-top opacity-85 select-none"
+          />
+          {/* Subtle gradient overlay to fade the image into the page background at the bottom */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+        </div>
 
         {/* Ambient aura */}
         <div className="pointer-events-none fixed inset-0 -z-10">
