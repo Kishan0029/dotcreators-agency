@@ -12,6 +12,8 @@ import { supabase } from "@/lib/supabaseClient";
 import LiquidBackground from "@/components/LiquidBackground";
 import frame14 from "@/assets/Frame 14.png";
 import frame15 from "@/assets/frame 15.png";
+import frame16 from "@/assets/frame 16.png";
+import frame17 from "@/assets/Frame 17.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -61,11 +63,23 @@ function Index() {
   const [form, setForm] = useState({ name: "", handle: "", niche: NICHES[0] });
   const [loaderComplete, setLoaderComplete] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [currentFrame, setCurrentFrame] = useState(14);
+  const [currentFrameMobile, setCurrentFrameMobile] = useState(15);
 
   // Set client flag on mount to defeat server minification errors safely
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Cycle background images every 3 seconds
+  useEffect(() => {
+    if (!isClient) return;
+    const timer = setInterval(() => {
+      setCurrentFrame((prev) => (prev === 14 ? 17 : 14));
+      setCurrentFrameMobile((prev) => (prev === 15 ? 16 : 15));
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [isClient]);
 
   // Listen for loader completion event
   useEffect(() => {
@@ -123,18 +137,42 @@ function Index() {
 
         {/* Background Image (Creators Group) */}
         <div className="absolute inset-x-0 top-0 z-0 w-full h-[120vh] min-h-[750px] sm:min-h-[900px] pointer-events-none overflow-hidden select-none flex justify-center">
-          {/* PC View: Frame 14 */}
-          <img
-            src={frame14}
-            alt=""
-            className="hidden md:block w-full h-full object-cover object-top opacity-85 select-none"
-          />
-          {/* Mobile View: Frame 15 */}
-          <img
-            src={frame15}
-            alt=""
-            className="block md:hidden w-full h-full object-cover object-top opacity-85 select-none"
-          />
+          {/* PC View: Frame 14 & 17 Smooth Crossfade */}
+          <div className="hidden md:block absolute inset-0 w-full h-full">
+            <motion.img
+              src={frame14}
+              alt=""
+              animate={{ opacity: currentFrame === 14 ? 0.85 : 0 }}
+              transition={{ duration: 1.0, ease: "easeInOut" }}
+              className="absolute inset-0 w-full h-full object-cover object-top select-none"
+            />
+            <motion.img
+              src={frame17}
+              alt=""
+              initial={{ opacity: 0 }}
+              animate={{ opacity: currentFrame === 17 ? 0.85 : 0 }}
+              transition={{ duration: 1.0, ease: "easeInOut" }}
+              className="absolute inset-0 w-full h-full object-cover object-top select-none"
+            />
+          </div>
+          {/* Mobile View: Frame 15 & 16 Smooth Crossfade */}
+          <div className="block md:hidden absolute inset-0 w-full h-full">
+            <motion.img
+              src={frame15}
+              alt=""
+              animate={{ opacity: currentFrameMobile === 15 ? 0.85 : 0 }}
+              transition={{ duration: 1.0, ease: "easeInOut" }}
+              className="absolute inset-0 w-full h-full object-cover object-top select-none"
+            />
+            <motion.img
+              src={frame16}
+              alt=""
+              initial={{ opacity: 0 }}
+              animate={{ opacity: currentFrameMobile === 16 ? 0.85 : 0 }}
+              transition={{ duration: 1.0, ease: "easeInOut" }}
+              className="absolute inset-0 w-full h-full object-cover object-top select-none"
+            />
+          </div>
           {/* Subtle gradient overlay to fade the image into the page background at the bottom */}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
         </div>
