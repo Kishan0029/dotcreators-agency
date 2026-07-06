@@ -7,16 +7,8 @@ import dotLogo from "@/assets/logo2026.png";
 import dotLogoPng from "@/assets/dotlogo.png";
 import summitLogo from "@/assets/summit-logo.png";
 import unionLogo from "@/assets/Union.png";
-import brand1 from "@/assets/brand1.jpg";
-import brand2 from "@/assets/brand2.jpg";
-import brand3 from "@/assets/brand3.jpg";
-import brand4 from "@/assets/brand4.jpg";
-import brand5 from "@/assets/brand5.jpg";
-import brand6 from "@/assets/brand6.jpg";
-import brand7 from "@/assets/brand7.jpg";
 // Import the Supabase client you created
 import { supabase } from "@/lib/supabaseClient";
-import { MouseImageTrail } from "@/components/MouseImageTrail";
 import LiquidBackground from "@/components/LiquidBackground";
 import frame14 from "@/assets/Frame 14.png";
 import frame15 from "@/assets/frame 15.png";
@@ -126,12 +118,7 @@ function Index() {
   }
 
   return (
-    <MouseImageTrail
-      renderImageBuffer={35}
-      rotationRange={24}
-      images={[brand1, brand2, brand3, brand4, brand5, brand6, brand7, brand1, brand2, brand3, brand4, brand5, brand6, brand7]}
-    >
-      <main className="relative min-h-screen w-full flex flex-col items-center bg-background text-foreground overflow-x-hidden">
+    <main className="relative min-h-screen w-full flex flex-col items-center bg-background text-foreground overflow-x-hidden">
         <LiquidBackground />
 
         {/* Background Image (Creators Group) */}
@@ -415,7 +402,6 @@ function Index() {
           .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
         `}</style>
       </main>
-    </MouseImageTrail>
   );
 }
 
