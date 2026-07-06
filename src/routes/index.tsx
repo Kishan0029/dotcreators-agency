@@ -243,7 +243,7 @@ function Index() {
                       Soon · Date to be Announced
                     </div>
                     <h2 className="font-display text-3xl leading-tight sm:text-4xl text-foreground">
-                      Join the Waitlist
+                      Register to Join
                     </h2>
                     <p className="mt-2 text-sm text-muted-foreground">
                       Register your interest to secure your creator pass.
@@ -356,15 +356,15 @@ function Index() {
           <div className="mt-16 grid gap-10 md:grid-cols-[1fr_auto_1fr] md:items-center">
             <FadeIn delay={0.1}>
               <div className="text-right md:pr-2">
-                <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Organized by</div>
+                <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Presented by</div>
                 <div className="mt-3 flex items-center justify-end">
-                  <span className="mr-3 text-[13px] font-medium tracking-[0.2em] uppercase">Dot Entertainments</span>
+                  <span className="mr-3 text-[13px] font-medium tracking-[0.2em] uppercase">Pai Convention Hall & Catering</span>
                   <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-white p-1 shadow-sm border border-border">
-                    <img src={dotLogoPng} alt="Dot Entertainments" className="h-full w-full object-contain" />
+                    <img src={paiLogo} alt="Pai Convention Hall & Catering" className="h-full w-full object-contain" />
                   </div>
                 </div>
                 <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                  Curating premium experiences<br />for India's creator economy.
+                  Pai Convention Hall,<br />Belagavi, Karnataka.
                 </p>
               </div>
             </FadeIn>
@@ -374,15 +374,15 @@ function Index() {
 
             <FadeIn delay={0.2}>
               <div className="md:pl-2">
-                <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Presented by </div>
+                <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Co-organized by</div>
                 <div className="mt-3 flex items-center gap-3">
                   <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-white p-1 shadow-sm border border-border">
-                    <img src={paiLogo} alt="Pai Convention Hall & Catering" className="h-full w-full object-contain" />
+                    <img src={dotLogoPng} alt="Dot Entertainments" className="h-full w-full object-contain" />
                   </div>
-                  <span className="text-[13px] font-medium tracking-[0.2em] uppercase">Pai Convention Hall & Catering</span>
+                  <span className="text-[13px] font-medium tracking-[0.2em] uppercase">Dot Entertainments</span>
                 </div>
                 <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                  Pai Convention Hall,<br />Belagavi, Karnataka.
+                  Curating premium experiences<br />for India's creator economy.
                 </p>
               </div>
             </FadeIn>
