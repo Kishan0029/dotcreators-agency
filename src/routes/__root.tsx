@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 import { useState } from "react";
 import { OBYSLoader } from "../components/OBYSLoader";
-import CustomCursor from "../components/CustomCursor";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -41,7 +40,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       <QueryClientProvider client={queryClient}>
         {!isLoaded && <OBYSLoader onComplete={() => setIsLoaded(true)} />}
         <div style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.8s ease' }}>
-          <CustomCursor />
           <Outlet />
         </div>
       </QueryClientProvider>
