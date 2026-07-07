@@ -1,46 +1,58 @@
-<div align="center">
+﻿<div align="center">
   <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Framework-React-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Platform-Web-blue?style=for-the-badge" />
 </div>
 
-<h1 align="center">DotCreators 2026</h1>
+<h1 align="center">DOTCREATORS AGENCY</h1>
 
 <p align="center">
-  <i>A modern web application built with cutting-edge technologies.</i>
+  <i>Event website made in collaboration with Dotlabs Agency.</i>
 </p>
 
 <br/>
 
-## 🎯 Features
+## ðŸŽ¯ Overview
 
-- ⚡ **Lightning Fast**: Built with Vite for rapid development and optimized builds.
-- 🎨 **Modern UI**: Styled with modern CSS frameworks for a sleek, responsive design.
-- 🔒 **Type-Safe**: Developed entirely in TypeScript for robust and reliable code.
+Welcome to **dotcreators-agency**! 
+Event website made in collaboration with Dotlabs Agency.
 
-## 🛠️ Tech Stack
+This project was developed with a focus on modern web standards, performance, and responsive design.
 
-- **Frontend**: React, TypeScript, Vite
-- **Package Manager**: Bun
-- **Styling**: Tailwind CSS (assumed based on standard Vite/React templates)
+## ðŸš€ Getting Started
 
-## 🚀 Quick Start
+To get a local copy up and running, follow these steps.
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Kishan0029/dotcreators2026.git
-   ```
-2. **Install dependencies using Bun**:
-   ```bash
-   bun install
-   ```
-3. **Start the development server**:
-   ```bash
-   bun run dev
-   ```
+### Prerequisites
 
-## 🔗 Live Demo
+Make sure you have [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed on your machine (if applicable to the stack).
 
-Check out the live application here: **[DotCreators 2026 Demo](https://dotcreators2026-amber.vercel.app)**
+### Installation
+
+1. Clone the repo:
+   `sh
+   git clone https://github.com/Kishan0029/dotcreators-agency.git
+   `
+2. Navigate into the directory:
+   `sh
+   cd dotcreators-agency
+   `
+3. Install NPM packages:
+   `sh
+   npm install
+   `
+4. Start the development server:
+   `sh
+   npm run dev
+   `
+
+## ðŸ‘¨â€ðŸ’» Developer
+
+**Kishan Revankar** 
+- [GitHub Profile](https://github.com/Kishan0029)
+- [Twitter/X](https://x.com/Kishan__29)
+- [LinkedIn](https://www.linkedin.com/in/kishanrevankar29/)
 
 ---
-<p align="center">Built with ❤️ by Kishan</p>
+<div align="center">
+  <i>"Code is like humor. When you have to explain it, itâ€™s bad." - Cory House</i>
+</div>
