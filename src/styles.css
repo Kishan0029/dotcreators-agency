@@ -88,9 +88,16 @@
     animation: blink 1.5s ease-in-out infinite;
   }
   .glass {
-    background: linear-gradient(180deg, var(--card), oklch(0.99 0.005 285 / 0.6));
-    backdrop-filter: blur(28px) saturate(140%);
-    border: 1px solid var(--border);
+    background: linear-gradient(
+      135deg,
+      oklch(0.99 0.005 285 / 0.92) 0%,
+      oklch(0.98 0.005 285 / 0.85) 100%
+    );
+    backdrop-filter: blur(30px) saturate(160%);
+    border: 1.5px solid oklch(0.65 0.22 285 / 0.25);
+    box-shadow: 
+      0 30px 60px -15px oklch(0.2 0.015 285 / 0.15),
+      inset 0 1px 0 0 oklch(1 0 0 / 0.9);
   }
   .grain {
     background-image: radial-gradient(oklch(1 0 0 / 0.04) 1px, transparent 1px);

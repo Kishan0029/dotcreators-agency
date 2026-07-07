@@ -252,6 +252,7 @@ function Index() {
         <div className="absolute left-1/2 top-[18%] h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-1),_transparent_60%)] blur-3xl" />
         <div className="absolute left-[20%] top-[60%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-2),_transparent_60%)] blur-3xl" />
         <div className="absolute right-[10%] top-[80%] h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle_at_center,_var(--color-aura-1),_transparent_60%)] blur-3xl" />
+        <div className="absolute inset-x-0 bottom-0 h-[50vh] bg-gradient-to-t from-[#0060FF]/30 to-transparent blur-3xl" />
         <div className="absolute inset-0 grain opacity-[0.4]" />
       </div>
 
@@ -363,8 +364,8 @@ function Index() {
                     <Field label="Creator Photo">
                       <div
                         className={`relative flex flex-col items-center justify-center border border-dashed rounded-xl p-6 transition-all cursor-pointer ${photoPreview
-                            ? "border-accent/40 bg-foreground/[0.02]"
-                            : "border-border hover:border-accent/60 bg-foreground/[0.01] hover:bg-foreground/[0.02]"
+                            ? "border-accent/40 bg-white/60 backdrop-blur-[4px]"
+                            : "border-border/80 hover:border-accent/60 bg-white/40 hover:bg-white/60 backdrop-blur-[4px]"
                           }`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -583,15 +584,26 @@ function Index() {
           .input {
             width: 100%;
             border-radius: 0.75rem;
-            border: 1px solid var(--border);
-            background: var(--input);
+            border: 1px solid oklch(0.2 0.015 285 / 0.15);
+            background: oklch(1 0 0 / 0.75);
             padding: 0.85rem 1rem;
             font-size: 0.875rem;
             color: var(--foreground);
+            backdrop-filter: blur(4px);
             transition: all 0.2s;
+            box-shadow: inset 0 1px 2px oklch(0 0 0 / 0.03);
           }
-          .input::placeholder { color: var(--muted-foreground); opacity: 0.6; }
-          .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+          .input::placeholder { color: var(--muted-foreground); opacity: 0.85; }
+          .input:hover {
+            background: oklch(1 0 0 / 0.85);
+            border-color: oklch(0.2 0.015 285 / 0.25);
+          }
+          .input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: oklch(1 0 0 / 0.95);
+            box-shadow: 0 0 0 3px oklch(0.65 0.22 285 / 0.25), inset 0 1px 2px oklch(0 0 0 / 0.03);
+          }
         `}</style>
     </main>
   );
@@ -600,7 +612,7 @@ function Index() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{label}</span>
+      <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/75">{label}</span>
       {children}
     </label>
   );
