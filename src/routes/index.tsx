@@ -523,7 +523,8 @@ function Index() {
                         {NICHES.map((n) => <option key={n} value={n} className="bg-card text-foreground">{n}</option>)}
                       </select>
                     </Field>
-                    <Field label="Creator Photo">
+                    <div className="block">
+                      <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/75">Creator Photo</span>
                       <div
                         className={`relative flex flex-col items-center justify-center border border-dashed rounded-xl p-6 transition-all cursor-pointer ${waitlistPhotoPreview
                             ? "border-accent/40 bg-white/60 backdrop-blur-[4px]"
@@ -606,7 +607,7 @@ function Index() {
                           </div>
                         )}
                       </div>
-                    </Field>
+                    </div>
 
                     <motion.button
                       type="submit"
@@ -726,7 +727,8 @@ function Index() {
                       {NICHES.map((n) => <option key={n} value={n} className="bg-card text-foreground">{n}</option>)}
                     </select>
                   </Field>
-                  <Field label="Creator Photo">
+                  <div className="block">
+                    <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/75">Creator Photo</span>
                     <div
                       className={`relative flex flex-col items-center justify-center border border-dashed rounded-xl p-6 transition-all cursor-pointer ${photoPreview
                           ? "border-accent/40 bg-white/60 backdrop-blur-[4px]"
@@ -809,7 +811,7 @@ function Index() {
                         </div>
                       )}
                     </div>
-                  </Field>
+                  </div>
                   <motion.button
                     type="submit"
                     disabled={loading}
