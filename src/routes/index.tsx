@@ -159,6 +159,31 @@ function Index() {
   const [submittingPhoto, setSubmittingPhoto] = useState(false);
   const [photoSubmitSuccess, setPhotoSubmitSuccess] = useState(false);
 
+  const [alertConfig, setAlertConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: "error" | "success" | "info";
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "error",
+  });
+
+  const showAlert = (
+    message: string,
+    title = "Notice",
+    type: "error" | "success" | "info" = "error",
+  ) => {
+    setAlertConfig({
+      isOpen: true,
+      title,
+      message,
+      type,
+    });
+  };
+
   // Set client flag on mount to defeat server minification errors safely
   useEffect(() => {
     setIsClient(true);
@@ -176,11 +201,11 @@ function Index() {
 
   function handlePhotoSelect(file: File) {
     if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file.");
+      showAlert("Please upload an image file.", "Invalid File Type", "error");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      alert("Photo must be smaller than 5MB.");
+      showAlert("Photo must be smaller than 5MB.", "File Too Large", "error");
       return;
     }
     setPhotoFile(file);
@@ -194,11 +219,11 @@ function Index() {
 
   function handleWaitlistPhotoSelect(file: File) {
     if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file.");
+      showAlert("Please upload an image file.", "Invalid File Type", "error");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      alert("Photo must be smaller than 5MB.");
+      showAlert("Photo must be smaller than 5MB.", "File Too Large", "error");
       return;
     }
     setWaitlistPhotoFile(file);
@@ -212,11 +237,11 @@ function Index() {
 
   function handlePhotoSubmitSelect(file: File) {
     if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file.");
+      showAlert("Please upload an image file.", "Invalid File Type", "error");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      alert("Photo must be smaller than 5MB.");
+      showAlert("Photo must be smaller than 5MB.", "File Too Large", "error");
       return;
     }
     setPhotoSubmitFile(file);
@@ -231,11 +256,11 @@ function Index() {
   async function handleVerifyAndSubmitPhoto(e: React.FormEvent) {
     e.preventDefault();
     if (!verifyName.trim()) {
-      alert("Please enter your name.");
+      showAlert("Please enter your name.", "Input Required", "error");
       return;
     }
     if (!photoSubmitFile) {
-      alert("Please select a photo to upload.");
+      showAlert("Please select a photo to upload.", "Input Required", "error");
       return;
     }
 
@@ -257,8 +282,10 @@ function Index() {
         if (error) throw error;
 
         if (!data || data.length === 0) {
-          alert(
-            `We couldn't find a registration for "${verifyName}". Please verify your name or contact support.`,
+          showAlert(
+            `We couldn't find a registration for "${verifyName}". Please verify your name. (Note: Ensure that your Supabase 'registrations' table has a SELECT policy enabled for public reads so the client can verify entries).`,
+            "Verification Failed",
+            "error",
           );
           setSubmittingPhoto(false);
           return;
@@ -269,8 +296,10 @@ function Index() {
         // Mock check for demo mode
         await new Promise((resolve) => setTimeout(resolve, 1000));
         if (verifyName.toLowerCase() === "notfound") {
-          alert(
-            `We couldn't find a registration for "${verifyName}". Please verify your name or contact support.`,
+          showAlert(
+            `We couldn't find a registration for "${verifyName}". Please verify your name. (Note: Ensure that your Supabase 'registrations' table has a SELECT policy enabled for public reads so the client can verify entries).`,
+            "Verification Failed",
+            "error",
           );
           setSubmittingPhoto(false);
           return;
@@ -318,7 +347,11 @@ function Index() {
       fireConfetti();
     } catch (error: any) {
       console.error("Error submitting photo:", error);
-      alert(`Oops! Something went wrong: ${error.message || "Please try again."}`);
+      showAlert(
+        `Oops! Something went wrong: ${error.message || "Please try again."}`,
+        "Submission Error",
+        "error",
+      );
     } finally {
       setSubmittingPhoto(false);
     }
@@ -392,7 +425,11 @@ function Index() {
       setSubmitted(true);
     } catch (error: any) {
       console.error("Error submitting registration:", error.message);
-      alert(`Oops! Something went wrong: ${error.message || "Please try again."}`);
+      showAlert(
+        `Oops! Something went wrong: ${error.message || "Please try again."}`,
+        "Registration Error",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -402,7 +439,7 @@ function Index() {
     e.preventDefault();
     if (!waitlistName.trim() || !waitlistHandle.trim()) return;
     if (!waitlistPhotoFile) {
-      alert("Please upload your photo first.");
+      showAlert("Please upload your photo first.", "Photo Required", "error");
       return;
     }
 
@@ -456,7 +493,11 @@ function Index() {
       fireConfetti();
     } catch (error: any) {
       console.error("Error submitting waitlist registration:", error);
-      alert(`Oops! Something went wrong: ${error.message || "Please try again."}`);
+      showAlert(
+        `Oops! Something went wrong: ${error.message || "Please try again."}`,
+        "Waitlist Error",
+        "error",
+      );
     } finally {
       setWaitlistLoading(false);
     }
@@ -1001,6 +1042,65 @@ function Index() {
             animation: border-rainbow 8s linear infinite;
           }
         `}</style>
+
+      <AnimatePresence>
+        {alertConfig.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setAlertConfig((prev) => ({ ...prev, isOpen: false }))}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+
+            {/* Modal Body */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl border border-black/[0.05] text-center z-10 flex flex-col items-center justify-center"
+            >
+              {/* Icon */}
+              <div
+                className={`mx-auto flex h-12 w-12 items-center justify-center rounded-full mb-4 ${
+                  alertConfig.type === "success"
+                    ? "bg-emerald-500/10 text-emerald-600"
+                    : alertConfig.type === "info"
+                      ? "bg-[#7C3AED]/10 text-[#7C3AED]"
+                      : "bg-red-500/10 text-red-600"
+                }`}
+              >
+                {alertConfig.type === "success" ? (
+                  <Check className="h-6 w-6" />
+                ) : alertConfig.type === "info" ? (
+                  <Lock className="h-6 w-6" />
+                ) : (
+                  <AlertCircle className="h-6 w-6" />
+                )}
+              </div>
+
+              {/* Title */}
+              <h3 className="text-lg font-semibold text-foreground mb-2">{alertConfig.title}</h3>
+
+              {/* Message */}
+              <p className="text-sm text-muted-foreground/90 leading-relaxed mb-6">
+                {alertConfig.message}
+              </p>
+
+              {/* Action Button */}
+              <button
+                onClick={() => setAlertConfig((prev) => ({ ...prev, isOpen: false }))}
+                className="w-full rounded-xl bg-foreground py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-foreground/90 cursor-pointer"
+              >
+                OK
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
