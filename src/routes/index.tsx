@@ -296,18 +296,9 @@ function Index() {
         photoUrl = publicUrl;
       }
 
-      // Format WhatsApp message with image URL
-      const message = `Hi, I'm interested in joining the Pai Creator Summit 2026. Here are my details:
-
-Name: ${waitlistName.trim()}
-Profile: ${waitlistHandle.trim()}
-Photo: ${photoUrl}`;
-      
-      const whatsappUrl = `https://wa.me/919187127114?text=${encodeURIComponent(message)}`;
-
-      // Sync to Supabase in the background
+      // Sync to Supabase synchronously
       if (!isPlaceholder) {
-        supabase
+        const { error } = await supabase
           .from("registrations")
           .insert([
             {
@@ -317,20 +308,17 @@ Photo: ${photoUrl}`;
               niche: "Other",
               photo_url: photoUrl,
             }
-          ])
-          .then(({ error }) => {
-            if (error) console.error("Supabase logging error:", error);
-          });
+          ]);
+        if (error) throw error;
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-
-      // Redirect immediately to prevent popup blocker issues
-      window.location.href = whatsappUrl;
 
       setWaitlistSubmitted(true);
       fireConfetti();
     } catch (error: any) {
-      console.error("Error submitting waitlist redirect:", error);
-      alert(`Oops! Something went wrong uploading your photo: ${error.message || "Please try again."}`);
+      console.error("Error submitting waitlist registration:", error);
+      alert(`Oops! Something went wrong: ${error.message || "Please try again."}`);
     } finally {
       setWaitlistLoading(false);
     }
