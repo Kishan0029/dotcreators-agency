@@ -125,7 +125,12 @@ function Index() {
   const [isClient, setIsClient] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [waitlistName, setWaitlistName] = useState("");
   const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [waitlistHandle, setWaitlistHandle] = useState("");
+  const [waitlistNiche, setWaitlistNiche] = useState(NICHES[0]);
+  const [waitlistPhotoFile, setWaitlistPhotoFile] = useState<File | null>(null);
+  const [waitlistPhotoPreview, setWaitlistPhotoPreview] = useState<string | null>(null);
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
 
@@ -159,6 +164,24 @@ function Index() {
     const reader = new FileReader();
     reader.onloadend = () => {
       setPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleWaitlistPhotoSelect(file: File) {
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Photo must be smaller than 5MB.");
+      return;
+    }
+    setWaitlistPhotoFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setWaitlistPhotoPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
   }
@@ -239,37 +262,81 @@ function Index() {
 
   async function submitWaitlist(e: React.FormEvent) {
     e.preventDefault();
-    if (!waitlistEmail.trim()) return;
+    if (!waitlistName.trim() || !waitlistEmail.trim() || !waitlistHandle.trim()) return;
 
     setWaitlistLoading(true);
     try {
       const isPlaceholder = !import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL.includes("placeholder.supabase.co");
 
       if (isPlaceholder) {
-        await new Promise((resolve) => setTimeout(resolve, 1200));
-        console.log("Demo Mode: Simulated successful waitlist signup:", waitlistEmail.trim());
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        console.log("Demo Mode: Simulated successful waitlist registration submit:", {
+          full_name: waitlistName.trim(),
+          email: waitlistEmail.trim(),
+          social_handle: waitlistHandle.trim(),
+          niche: waitlistNiche,
+          photo_name: waitlistPhotoFile ? waitlistPhotoFile.name : null
+        });
         setWaitlistSubmitted(true);
+        fireConfetti();
         return;
       }
 
+      let photoUrl = "";
+      if (waitlistPhotoFile) {
+        const fileExt = waitlistPhotoFile.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        // Upload photo to Supabase Storage in 'registrations' bucket
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("registrations")
+          .upload(filePath, waitlistPhotoFile, {
+            cacheControl: "3600",
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("registrations")
+          .getPublicUrl(filePath);
+
+        photoUrl = publicUrl;
+      }
+
+      // First, try to insert into waitlist table
+      let inserted = false;
       try {
         const { data, error } = await supabase
           .from("waitlist")
-          .insert([{ email: waitlistEmail.trim() }]);
-        
-        if (error) throw error;
-      } catch (waitlistError: any) {
-        console.warn("Waitlist table insert failed, falling back to registrations table:", waitlistError.message);
-        
+          .insert([
+            {
+              full_name: waitlistName.trim(),
+              email: waitlistEmail.trim(),
+              social_handle: waitlistHandle.trim(),
+              niche: waitlistNiche,
+              photo_url: photoUrl || null,
+            }
+          ]);
+        if (!error) {
+          inserted = true;
+        }
+      } catch (err) {
+        console.warn("Could not insert to waitlist table, trying registrations table:", err);
+      }
+
+      if (!inserted) {
+        // Fallback to registrations table
         const { data, error } = await supabase
           .from("registrations")
           .insert([
             {
-              full_name: "Waitlist Entry",
+              full_name: waitlistName.trim(),
               email: waitlistEmail.trim(),
-              social_handle: "waitlist",
-              niche: "Other",
-              photo_url: null,
+              social_handle: waitlistHandle.trim(),
+              niche: waitlistNiche,
+              photo_url: photoUrl || null,
             }
           ]);
 
@@ -277,8 +344,9 @@ function Index() {
       }
 
       setWaitlistSubmitted(true);
+      fireConfetti();
     } catch (error: any) {
-      console.error("Error submitting waitlist:", error.message);
+      console.error("Error submitting waitlist registration:", error.message);
       alert(`Oops! Something went wrong: ${error.message || "Please try again."}`);
     } finally {
       setWaitlistLoading(false);
@@ -409,31 +477,154 @@ function Index() {
 
                 {/* Waitlist Form */}
                 {!waitlistSubmitted ? (
-                  <form onSubmit={submitWaitlist} className="w-full max-w-sm mt-2 mb-6">
-                    <div className="flex flex-col sm:flex-row gap-2.5">
+                  <form onSubmit={submitWaitlist} className="w-full max-w-sm mt-4 mb-6 space-y-4 text-left">
+                    <Field label="Full name">
+                      <input
+                        required
+                        disabled={waitlistLoading}
+                        value={waitlistName}
+                        onChange={(e) => setWaitlistName(e.target.value)}
+                        className="input disabled:opacity-50"
+                        placeholder="Your name"
+                      />
+                    </Field>
+                    <Field label="Invitation email address">
                       <input
                         type="email"
                         required
                         disabled={waitlistLoading}
                         value={waitlistEmail}
                         onChange={(e) => setWaitlistEmail(e.target.value)}
-                        className="w-full rounded-xl border border-black/[0.08] bg-foreground/[0.02] hover:bg-foreground/[0.04] px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#7C3AED] focus:ring-2 focus:ring-[#7C3AED]/20 transition-all placeholder:text-muted-foreground/60"
-                        placeholder="Enter your email address"
+                        className="input disabled:opacity-50"
+                        placeholder="you@example.com"
                       />
-                      <motion.button
-                        type="submit"
+                    </Field>
+                    <Field label="Instagram / YouTube Link or Handle">
+                      <input
+                        required
                         disabled={waitlistLoading}
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
-                        className="shrink-0 rounded-xl bg-foreground hover:bg-black/90 text-primary-foreground hover:text-[#c084fc] font-semibold text-xs px-5 py-3 transition-colors flex items-center justify-center gap-1.5"
+                        value={waitlistHandle}
+                        onChange={(e) => setWaitlistHandle(e.target.value)}
+                        className="input disabled:opacity-50"
+                        placeholder="https://instagram.com/yourhandle"
+                      />
+                    </Field>
+                    <Field label="Primary niche">
+                      <select
+                        disabled={waitlistLoading}
+                        value={waitlistNiche}
+                        onChange={(e) => setWaitlistNiche(e.target.value)}
+                        className="input appearance-none cursor-pointer disabled:opacity-50"
                       >
-                        {waitlistLoading ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        {NICHES.map((n) => <option key={n} value={n} className="bg-card text-foreground">{n}</option>)}
+                      </select>
+                    </Field>
+                    <Field label="Creator Photo">
+                      <div
+                        className={`relative flex flex-col items-center justify-center border border-dashed rounded-xl p-6 transition-all cursor-pointer ${waitlistPhotoPreview
+                            ? "border-accent/40 bg-white/60 backdrop-blur-[4px]"
+                            : "border-border/80 hover:border-accent/60 bg-white/40 hover:bg-white/60 backdrop-blur-[4px]"
+                          }`}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (waitlistLoading) return;
+                          const files = e.dataTransfer.files;
+                          if (files && files[0]) {
+                            handleWaitlistPhotoSelect(files[0]);
+                          }
+                        }}
+                        onClick={() => {
+                          if (!waitlistLoading && !waitlistPhotoPreview) {
+                            document.getElementById("waitlist-photo-upload-input")?.click();
+                          }
+                        }}
+                      >
+                        <input
+                          id="waitlist-photo-upload-input"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={waitlistLoading}
+                          onChange={(e) => {
+                            const files = e.target.files;
+                            if (files && files[0]) {
+                              handleWaitlistPhotoSelect(files[0]);
+                            }
+                          }}
+                        />
+
+                        {waitlistPhotoPreview ? (
+                          <div className="flex items-center gap-4 w-full">
+                            <div className="relative h-16 w-16 rounded-full overflow-hidden border border-border bg-muted shrink-0">
+                              <img
+                                src={waitlistPhotoPreview}
+                                alt="Preview"
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">
+                                {waitlistPhotoFile?.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {(waitlistPhotoFile?.size ? waitlistPhotoFile.size / (1024 * 1024) : 0).toFixed(2)} MB
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              disabled={waitlistLoading}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setWaitlistPhotoFile(null);
+                                setWaitlistPhotoPreview(null);
+                              }}
+                              className="p-2 rounded-lg bg-foreground/[0.03] hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
                         ) : (
-                          "Join Waitlist"
+                          <div className="text-center py-2 w-full">
+                            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-foreground/[0.03] text-muted-foreground mb-3">
+                              <Upload className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                            <p className="text-xs font-medium text-foreground">
+                              Click or drag photo here
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-1">
+                              PNG, JPG or WEBP up to 5MB
+                            </p>
+                          </div>
                         )}
-                      </motion.button>
-                    </div>
+                      </div>
+                    </Field>
+
+                    <motion.button
+                      type="submit"
+                      disabled={waitlistLoading}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="group relative overflow-hidden flex w-full items-center justify-center gap-2 rounded-xl bg-foreground px-4 py-3.5 text-sm font-medium text-primary-foreground transition-colors hover:text-indigo-300 disabled:bg-foreground/60 mt-2"
+                    >
+                      <div className="relative z-10 flex items-center gap-2">
+                        {waitlistLoading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Joining Waitlist...
+                          </>
+                        ) : (
+                          <>
+                            Join Waitlist
+                            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                          </>
+                        )}
+                      </div>
+                    </motion.button>
                   </form>
                 ) : (
                   <motion.div
