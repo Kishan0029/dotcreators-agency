@@ -128,7 +128,7 @@ function Index() {
   const [waitlistName, setWaitlistName] = useState("");
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistHandle, setWaitlistHandle] = useState("");
-  const [waitlistNiche, setWaitlistNiche] = useState(NICHES[0]);
+  const [waitlistNiche, setWaitlistNiche] = useState("");
   const [waitlistPhotoFile, setWaitlistPhotoFile] = useState<File | null>(null);
   const [waitlistPhotoPreview, setWaitlistPhotoPreview] = useState<string | null>(null);
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
@@ -262,7 +262,7 @@ function Index() {
 
   async function submitWaitlist(e: React.FormEvent) {
     e.preventDefault();
-    if (!waitlistName.trim() || !waitlistEmail.trim() || !waitlistHandle.trim()) return;
+    if (!waitlistName.trim() || !waitlistEmail.trim() || !waitlistHandle.trim() || !waitlistNiche) return;
 
     setWaitlistLoading(true);
     try {
@@ -462,33 +462,35 @@ function Index() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7C3AED]/40 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#7C3AED]"></span>
                   </span>
-                  Status Update
+                  Applications Closed
                 </div>
 
                 {/* Heading */}
                 <h3 className="font-display text-4xl sm:text-[2.5rem] font-normal leading-[1.1] tracking-tight text-foreground mb-4">
-                  Applications Closed
+                  Creator Applications Closed
                 </h3>
 
                 {/* Description */}
                 <p className="text-sm sm:text-[14px] leading-relaxed text-muted-foreground/95 max-w-sm px-2 mb-6">
-                  Thank you for the overwhelming response. Creator applications are currently closed while our team reviews all submissions. Selected applicants will receive further communication shortly.
+                  Thank you for the overwhelming response to DOT Creator Summit 2026.
+                  <br /><br />
+                  Creator applications are now officially closed. If you believe your profile would be a valuable addition to the summit, you may submit your details below for consideration. Our team will carefully review every request, and if an opportunity becomes available, we will contact you via email.
                 </p>
 
                 {/* Waitlist Form */}
                 {!waitlistSubmitted ? (
                   <form onSubmit={submitWaitlist} className="w-full max-w-sm mt-4 mb-6 space-y-4 text-left">
-                    <Field label="Full name">
+                    <Field label="Full Name">
                       <input
                         required
                         disabled={waitlistLoading}
                         value={waitlistName}
                         onChange={(e) => setWaitlistName(e.target.value)}
                         className="input disabled:opacity-50"
-                        placeholder="Your name"
+                        placeholder="Enter your full name"
                       />
                     </Field>
-                    <Field label="Invitation email address">
+                    <Field label="Email Address">
                       <input
                         type="email"
                         required
@@ -496,26 +498,28 @@ function Index() {
                         value={waitlistEmail}
                         onChange={(e) => setWaitlistEmail(e.target.value)}
                         className="input disabled:opacity-50"
-                        placeholder="you@example.com"
+                        placeholder="name@example.com"
                       />
                     </Field>
-                    <Field label="Instagram / YouTube Link or Handle">
+                    <Field label="Instagram / YouTube Profile">
                       <input
                         required
                         disabled={waitlistLoading}
                         value={waitlistHandle}
                         onChange={(e) => setWaitlistHandle(e.target.value)}
                         className="input disabled:opacity-50"
-                        placeholder="https://instagram.com/yourhandle"
+                        placeholder="https://instagram.com/yourusername"
                       />
                     </Field>
-                    <Field label="Primary niche">
+                    <Field label="Primary Content Category">
                       <select
+                        required
                         disabled={waitlistLoading}
                         value={waitlistNiche}
                         onChange={(e) => setWaitlistNiche(e.target.value)}
-                        className="input appearance-none cursor-pointer disabled:opacity-50"
+                        className="input appearance-none cursor-pointer disabled:opacity-50 text-foreground"
                       >
+                        <option value="" disabled className="text-muted-foreground">Select your primary content category</option>
                         {NICHES.map((n) => <option key={n} value={n} className="bg-card text-foreground">{n}</option>)}
                       </select>
                     </Field>
@@ -594,10 +598,10 @@ function Index() {
                               <Upload className="h-5 w-5 text-muted-foreground" />
                             </div>
                             <p className="text-xs font-medium text-foreground">
-                              Click or drag photo here
+                              Upload a recent profile photo
                             </p>
                             <p className="text-[10px] text-muted-foreground mt-1">
-                              PNG, JPG or WEBP up to 5MB
+                              PNG, JPG, or WEBP • Maximum 5 MB
                             </p>
                           </div>
                         )}
@@ -615,11 +619,11 @@ function Index() {
                         {waitlistLoading ? (
                           <>
                             <Loader2 className="h-4 w-4 animate-spin" />
-                            Joining Waitlist...
+                            Requesting Consideration...
                           </>
                         ) : (
                           <>
-                            Join Waitlist
+                            Request Consideration
                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                           </>
                         )}
@@ -632,15 +636,18 @@ function Index() {
                     animate={{ opacity: 1 }}
                     className="w-full max-w-sm py-4 px-3 bg-purple-500/5 border border-purple-500/10 rounded-xl text-center mb-6 text-xs text-purple-700 font-medium"
                   >
-                    ✨ You have been added to our waitlist. We will notify you when applications open.
+                    ✨ Your request has been submitted for consideration. Our team will review your profile shortly.
                   </motion.div>
                 )}
 
                 {/* Queries Call-to-action */}
                 <div className="w-full flex flex-col items-center border-t border-black/[0.04] pt-6 mb-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/75 mb-3">
-                    Have queries?
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/75 mb-1">
+                    Have Questions?
                   </span>
+                  <p className="text-[11px] text-muted-foreground/80 mb-3 max-w-xs text-center px-4 leading-normal">
+                    Need assistance regarding your request? Contact our team on WhatsApp.
+                  </p>
                   <motion.a
                     href="https://wa.me/919187127114?text=Hi,%20I'm%20interested%20in%20joining%20the%20Creator%20Summit%202026."
                     target="_blank"
