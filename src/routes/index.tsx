@@ -626,7 +626,9 @@ function Index() {
                   <span>Collaborate</span>
                   <span className="h-1 w-1 rounded-full bg-border" />
                   <span>Grow</span>
-                           ) : (
+                </div>
+              </motion.div>
+            ) : (
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
