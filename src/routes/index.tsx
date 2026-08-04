@@ -473,7 +473,7 @@ function Index() {
       const err = error as Error;
       showAlert(
         `Oops! Something went wrong: ${err.message || "Please try again."}`,
-        "Waitlist Error",
+        "Registration Error",
         "error",
       );
     } finally {
@@ -641,13 +641,13 @@ function Index() {
                       <Check className="h-8 w-8 stroke-[2.5]" />
                     </div>
                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-[11px] font-medium tracking-[0.15em] uppercase text-emerald-700 mb-4">
-                      <span>YOU'RE ON THE LIST</span>
+                      <span>YOU'RE REGISTERED</span>
                     </div>
                     <h3 className="font-display text-4xl sm:text-5xl font-normal tracking-tight text-foreground mb-3">
-                      You're on the list!
+                      You're registered!
                     </h3>
                     <p className="text-[15px] leading-relaxed text-muted-foreground max-w-sm mb-8">
-                      Thank you for registering your interest. We'll notify you with updates as Creator Summit passes for August 16th, 2026 are released.
+                      Thank you for registering. We'll send your creator pass details and updates for August 16th, 2026 to your email.
                     </p>
                     <button
                       onClick={() => {
@@ -681,12 +681,12 @@ function Index() {
 
                     {/* Title */}
                     <h3 className="font-display text-4xl sm:text-[2.75rem] font-normal leading-[1.1] tracking-tight text-foreground mb-2">
-                      Join the Waitlist
+                      Be a Part of It
                     </h3>
 
                     {/* Subtitle */}
                     <p className="text-sm sm:text-[15px] leading-relaxed text-muted-foreground mb-8">
-                      Register your interest to secure your creator pass.
+                      Complete your registration below to claim your creator pass.
                     </p>
 
                     {/* Form */}
