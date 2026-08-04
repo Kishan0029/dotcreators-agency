@@ -19,13 +19,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "An invitation-only gathering of India's leading content creators at Pai Convention Hall, Belagavi.",
+          "An invitation-only gathering of India's leading content creators on 16th August 2026 at Pai Convention Hall, Belagavi.",
       },
       { property: "og:title", content: "Creator Summit 2026 — You're Invited" },
       {
         property: "og:description",
         content:
-          "Connect • Collaborate • Grow. Hosted by Dot Entertainments at Pai Convention Hall.",
+          "Connect • Collaborate • Grow. Hosted by Dot Entertainments on 16th August 2026 at Pai Convention Hall.",
       },
     ],
   }),
@@ -148,7 +148,7 @@ function Index() {
   const [waitlistName, setWaitlistName] = useState("");
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistHandle, setWaitlistHandle] = useState("");
-  const [waitlistNiche, setWaitlistNiche] = useState("");
+  const [waitlistNiche, setWaitlistNiche] = useState(NICHES[0]);
   const [waitlistPhotoFile, setWaitlistPhotoFile] = useState<File | null>(null);
   const [waitlistPhotoPreview, setWaitlistPhotoPreview] = useState<string | null>(null);
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
@@ -440,9 +440,8 @@ function Index() {
 
   async function submitWaitlist(e: React.FormEvent) {
     e.preventDefault();
-    if (!waitlistName.trim() || !waitlistHandle.trim()) return;
-    if (!waitlistPhotoFile) {
-      showAlert("Please upload your photo first.", "Photo Required", "error");
+    if (!waitlistName.trim() || !waitlistEmail.trim() || !waitlistHandle.trim()) {
+      showAlert("Please fill out all required fields.", "Form Incomplete", "error");
       return;
     }
 
@@ -452,44 +451,19 @@ function Index() {
         !import.meta.env.VITE_SUPABASE_URL ||
         import.meta.env.VITE_SUPABASE_URL.includes("placeholder.supabase.co");
 
-      let photoUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500";
-
-      if (!isPlaceholder && waitlistPhotoFile) {
-        const fileExt = waitlistPhotoFile.name.split(".").pop();
-        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        // Upload photo to Supabase Storage in 'registrations' bucket
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("registrations")
-          .upload(filePath, waitlistPhotoFile, {
-            cacheControl: "3600",
-            upsert: false,
-          });
-
-        if (uploadError) throw uploadError;
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("registrations").getPublicUrl(filePath);
-
-        photoUrl = publicUrl;
-      }
-
-      // Sync to Supabase synchronously
       if (!isPlaceholder) {
         const { error } = await supabase.from("registrations").insert([
           {
             full_name: waitlistName.trim(),
-            email: "",
+            email: waitlistEmail.trim(),
             social_handle: waitlistHandle.trim(),
-            niche: "Other",
-            photo_url: photoUrl,
+            niche: waitlistNiche || NICHES[0],
+            photo_url: "",
           },
         ]);
         if (error) throw error;
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 800));
       }
 
       setWaitlistSubmitted(true);
@@ -551,7 +525,7 @@ function Index() {
           </div>
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-foreground/[0.03] px-3.5 py-1 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
             <span className="h-1 w-1 rounded-full bg-accent" />
-            Creator Summit · 2026
+            Creator Summit · 16th August 2026
           </div>
         </FadeIn>
         <FadeIn delay={0.05}>
@@ -632,7 +606,7 @@ function Index() {
 
                 {/* CTA WhatsApp Button */}
                 <motion.a
-                  href="https://wa.me/919187127114?text=Hi,%20I'm%20interested%20in%20joining%20the%20Creator%20Summit%202026."
+                  href="https://wa.me/919187127114?text=Hi,%20I'm%20interested%20in%20joining%20the%20Creator%20Summit%20on%2016th%20August%202026."
                   target="_blank"
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.02 }}
@@ -652,79 +626,191 @@ function Index() {
                   <span>Collaborate</span>
                   <span className="h-1 w-1 rounded-full bg-border" />
                   <span>Grow</span>
-                </div>
-              </motion.div>
-            ) : (
+                           ) : (
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                whileHover={{ y: -4, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }}
-                className="relative bg-white border border-black/[0.04] rounded-3xl p-10 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.02),0_1px_2px_rgba(0,0,0,0.01)] hover:shadow-[0_30px_70px_rgba(0,0,0,0.04),0_1px_3px_rgba(0,0,0,0.015)] transition-shadow duration-500 w-full text-center flex flex-col items-center justify-center"
+                className="relative bg-white border border-black/[0.04] rounded-3xl p-8 sm:p-10 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.02),0_1px_2px_rgba(0,0,0,0.01)] hover:shadow-[0_30px_70px_rgba(0,0,0,0.04),0_1px_3px_rgba(0,0,0,0.015)] transition-shadow duration-500 w-full text-left flex flex-col"
               >
-                {/* Refined Premium Status Icon */}
-                <div className="relative flex items-center justify-center w-14 h-14 mb-6">
-                  {/* Pulsing Outer Glow Ring */}
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.25, 1],
-                      opacity: [0.15, 0.35, 0.15],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                    className="absolute inset-0 rounded-full border border-[#7C3AED]/35 bg-[#7C3AED]/3"
-                  />
-                  {/* Inner Circle and Lock Icon */}
-                  <div className="relative z-10 flex items-center justify-center w-10 h-10 rounded-full border border-black/[0.06] bg-white text-[#7C3AED] shadow-sm">
-                    <Sparkles className="w-4 h-4 stroke-[1.25]" />
+                {waitlistSubmitted ? (
+                  <div className="text-center flex flex-col items-center justify-center py-6">
+                    <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200/60 shadow-sm">
+                      <Check className="h-8 w-8 stroke-[2.5]" />
+                    </div>
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-[11px] font-medium tracking-[0.15em] uppercase text-emerald-700 mb-4">
+                      <span>YOU'RE ON THE LIST</span>
+                    </div>
+                    <h3 className="font-display text-4xl sm:text-5xl font-normal tracking-tight text-foreground mb-3">
+                      You're on the list!
+                    </h3>
+                    <p className="text-[15px] leading-relaxed text-muted-foreground max-w-sm mb-8">
+                      Thank you for registering your interest. We'll notify you with updates as Creator Summit passes for August 16th, 2026 are released.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setWaitlistSubmitted(false);
+                        setWaitlistName("");
+                        setWaitlistEmail("");
+                        setWaitlistHandle("");
+                        setWaitlistNiche(NICHES[0]);
+                      }}
+                      className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Register another creator
+                    </button>
+                    <div className="mt-8 pt-6 border-t border-black/[0.05] w-full flex items-center justify-center gap-3 text-[10px] font-semibold tracking-[0.28em] text-muted-foreground/60 uppercase">
+                      <span>CONNECT</span>
+                      <span className="h-1 w-1 rounded-full bg-border" />
+                      <span>COLLABORATE</span>
+                      <span className="h-1 w-1 rounded-full bg-border" />
+                      <span>GROW</span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {/* Top Pill Badge */}
+                    <div className="flex justify-center mb-6">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200/80 text-[11px] font-medium tracking-[0.15em] uppercase text-slate-500 shadow-sm">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#7C3AED]" />
+                        <span>16TH AUGUST 2026</span>
+                      </div>
+                    </div>
 
-                {/* Status Badge */}
-                <div className="inline-flex items-center gap-2 text-[10px] font-medium tracking-[0.25em] uppercase text-[#7C3AED] mb-4">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7C3AED]/40 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#7C3AED]"></span>
-                  </span>
-                  Registrations Open
-                </div>
+                    {/* Title */}
+                    <h3 className="font-display text-4xl sm:text-[2.75rem] font-normal leading-[1.1] tracking-tight text-foreground mb-2">
+                      Join the Waitlist
+                    </h3>
 
-                {/* Heading */}
-                <h3 className="font-display text-4xl sm:text-[2.5rem] font-normal leading-[1.1] tracking-tight text-foreground mb-4">
-                  Registrations Open
-                </h3>
+                    {/* Subtitle */}
+                    <p className="text-sm sm:text-[15px] leading-relaxed text-muted-foreground mb-8">
+                      Register your interest to secure your creator pass.
+                    </p>
 
-                {/* Description */}
-                <p className="text-sm sm:text-[14px] leading-relaxed text-muted-foreground/95 max-w-sm px-2 mb-6">
-                  Registrations are currently open. Click below to request your entry pass and consideration via WhatsApp.
-                </p>
+                    {/* Form */}
+                    <form onSubmit={submitWaitlist} className="space-y-5 w-full">
+                      <div>
+                        <label
+                          htmlFor="waitlist-name"
+                          className="block text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/80 mb-2"
+                        >
+                          FULL NAME
+                        </label>
+                        <input
+                          id="waitlist-name"
+                          type="text"
+                          required
+                          value={waitlistName}
+                          onChange={(e) => setWaitlistName(e.target.value)}
+                          placeholder="Your name"
+                          className="w-full rounded-2xl border border-black/[0.08] bg-white px-4 py-3.5 text-[15px] text-foreground placeholder:text-muted-foreground/50 focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground transition-all"
+                        />
+                      </div>
 
-                {/* CTA WhatsApp Button */}
-                <motion.a
-                  href="https://wa.me/919187127114?text=Hi,%20I'm%20interested%20in%20joining%20the%20Creator%20Summit%202026."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group relative overflow-hidden flex w-full items-center justify-center gap-2 rounded-xl bg-foreground px-4 py-3.5 text-sm font-medium text-primary-foreground transition-colors hover:text-indigo-300 w-full max-w-sm mt-4 mb-6"
-                >
-                  <div className="relative z-10 flex items-center gap-2">
-                    Request Consideration
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </div>
-                </motion.a>
+                      <div>
+                        <label
+                          htmlFor="waitlist-email"
+                          className="block text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/80 mb-2"
+                        >
+                          INVITATION EMAIL ADDRESS
+                        </label>
+                        <input
+                          id="waitlist-email"
+                          type="email"
+                          required
+                          value={waitlistEmail}
+                          onChange={(e) => setWaitlistEmail(e.target.value)}
+                          placeholder="you@example.com"
+                          className="w-full rounded-2xl border border-black/[0.08] bg-white px-4 py-3.5 text-[15px] text-foreground placeholder:text-muted-foreground/50 focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground transition-all"
+                        />
+                      </div>
 
-                {/* Footer */}
-                <div className="mt-4 pt-6 border-t border-black/[0.04] w-full flex items-center justify-center gap-3 text-[9px] font-bold tracking-[0.3em] text-muted-foreground/60 uppercase">
-                  <span>Connect</span>
-                  <span className="h-1 w-1 rounded-full bg-border" />
-                  <span>Collaborate</span>
-                  <span className="h-1 w-1 rounded-full bg-border" />
-                  <span>Grow</span>
-                </div>
+                      <div>
+                        <label
+                          htmlFor="waitlist-handle"
+                          className="block text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/80 mb-2"
+                        >
+                          INSTAGRAM / YOUTUBE LINK OR HANDLE
+                        </label>
+                        <input
+                          id="waitlist-handle"
+                          type="text"
+                          required
+                          value={waitlistHandle}
+                          onChange={(e) => setWaitlistHandle(e.target.value)}
+                          placeholder="https://instagram.com/yourhandle"
+                          className="w-full rounded-2xl border border-black/[0.08] bg-white px-4 py-3.5 text-[15px] text-foreground placeholder:text-muted-foreground/50 focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="waitlist-niche"
+                          className="block text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/80 mb-2"
+                        >
+                          PRIMARY NICHE
+                        </label>
+                        <div className="relative">
+                          <select
+                            id="waitlist-niche"
+                            value={waitlistNiche}
+                            onChange={(e) => setWaitlistNiche(e.target.value)}
+                            className="w-full rounded-2xl border border-black/[0.08] bg-white px-4 py-3.5 pr-10 text-[15px] text-foreground focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground transition-all appearance-none cursor-pointer"
+                          >
+                            {NICHES.map((niche) => (
+                              <option key={niche} value={niche}>
+                                {niche}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-foreground/70">
+                            <svg
+                              className="h-4 w-4 stroke-[2]"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-2">
+                        <button
+                          type="submit"
+                          disabled={waitlistLoading}
+                          className="group relative overflow-hidden flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0F172A] hover:bg-[#1E293B] px-6 py-4 text-base font-medium text-white transition-all duration-200 shadow-lg shadow-black/5 hover:shadow-xl hover:shadow-black/10 active:scale-[0.99] disabled:opacity-70"
+                        >
+                          {waitlistLoading ? (
+                            <div className="flex items-center gap-2">
+                              <Loader2 className="h-5 w-5 animate-spin" />
+                              <span>Submitting...</span>
+                            </div>
+                          ) : (
+                            <>
+                              <span>Register for Summit</span>
+                              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </form>
+
+                    {/* Footer */}
+                    <div className="mt-8 pt-6 border-t border-black/[0.05] w-full flex items-center justify-center gap-3 text-[10px] font-semibold tracking-[0.28em] text-muted-foreground/60 uppercase">
+                      <span>CONNECT</span>
+                      <span className="h-1 w-1 rounded-full bg-border" />
+                      <span>COLLABORATE</span>
+                      <span className="h-1 w-1 rounded-full bg-border" />
+                      <span>GROW</span>
+                    </div>
+                  </>
+                )}
               </motion.div>
             )}
           </div>

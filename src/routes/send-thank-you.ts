@@ -42,7 +42,7 @@ export const Route = createFileRoute("/send-thank-you")({
             to: email,
             subject: "Thank you for registering!",
             html: `<p>Hi <strong>${name}</strong>,</p>
-                   <p>Thank you for registering for the Creator Summit! We are so excited to have you.</p>
+                   <p>Thank you for registering for the Creator Summit on <strong>16th August 2026</strong>! We are so excited to have you.</p>
                    <p>See you there!</p>`,
           });
 
