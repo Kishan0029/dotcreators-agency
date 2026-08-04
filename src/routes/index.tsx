@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "motion/react";
-import { MapPin, ArrowRight, Check, X, Loader2, Upload, AlertCircle, Lock } from "lucide-react";
+import { MapPin, ArrowRight, Check, X, Loader2, Upload, AlertCircle, Lock, Sparkles } from "lucide-react";
 import confetti from "canvas-confetti";
 import paiLogo from "@/assets/pai-convention.png";
 import dotLogo from "@/assets/logo2026.png";
@@ -134,7 +134,7 @@ const fireConfetti = () => {
 };
 
 // Toggle to close applications and show the notice card by default
-const APPLICATIONS_CLOSED = true;
+const APPLICATIONS_CLOSED = false;
 
 function Index() {
   const [email, setEmail] = useState("");
@@ -607,7 +607,7 @@ function Index() {
                   />
                   {/* Inner Circle and Lock Icon */}
                   <div className="relative z-10 flex items-center justify-center w-10 h-10 rounded-full border border-black/[0.06] bg-white text-[#7C3AED] shadow-sm">
-                    <Lock className="w-4 h-4 stroke-[1.25]" />
+                    <Sparkles className="w-4 h-4 stroke-[1.25]" />
                   </div>
                 </div>
 
@@ -617,18 +617,17 @@ function Index() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7C3AED]/40 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#7C3AED]"></span>
                   </span>
-                  Registrations Closed
+                  Registrations Open
                 </div>
 
                 {/* Heading */}
                 <h3 className="font-display text-4xl sm:text-[2.5rem] font-normal leading-[1.1] tracking-tight text-foreground mb-4">
-                  Registrations Closed
+                  Registrations Open
                 </h3>
 
                 {/* Description */}
                 <p className="text-sm sm:text-[14px] leading-relaxed text-muted-foreground/95 max-w-sm px-2 mb-6">
-                  Thank you for the overwhelming response. Registrations are now closed. If you'd
-                  still like to be considered, request consideration via WhatsApp.
+                  Registrations are now open. Request your entry pass and consideration via WhatsApp below.
                 </p>
 
                 {/* CTA WhatsApp Button */}
@@ -680,7 +679,7 @@ function Index() {
                   />
                   {/* Inner Circle and Lock Icon */}
                   <div className="relative z-10 flex items-center justify-center w-10 h-10 rounded-full border border-black/[0.06] bg-white text-[#7C3AED] shadow-sm">
-                    <Lock className="w-4 h-4 stroke-[1.25]" />
+                    <Sparkles className="w-4 h-4 stroke-[1.25]" />
                   </div>
                 </div>
 
@@ -690,18 +689,17 @@ function Index() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7C3AED]/40 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#7C3AED]"></span>
                   </span>
-                  Registrations Closed
+                  Registrations Open
                 </div>
 
                 {/* Heading */}
                 <h3 className="font-display text-4xl sm:text-[2.5rem] font-normal leading-[1.1] tracking-tight text-foreground mb-4">
-                  Registrations Closed
+                  Registrations Open
                 </h3>
 
                 {/* Description */}
                 <p className="text-sm sm:text-[14px] leading-relaxed text-muted-foreground/95 max-w-sm px-2 mb-6">
-                  Thank you for the overwhelming response. Registrations are currently closed. Click
-                  below to request consideration via WhatsApp.
+                  Registrations are currently open. Click below to request your entry pass and consideration via WhatsApp.
                 </p>
 
                 {/* CTA WhatsApp Button */}
