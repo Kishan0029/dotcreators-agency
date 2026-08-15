@@ -19,13 +19,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "An invitation-only gathering of India's leading content creators on 16th August 2026 at Pai Convention Hall, Belagavi.",
+          "An invitation-only gathering of India's leading content creators on 30th August 2026 at Pai Convention Hall, Belagavi.",
       },
       { property: "og:title", content: "Creator Summit 2026 — You're Invited" },
       {
         property: "og:description",
         content:
-          "Connect • Collaborate • Grow. Hosted by Dot Entertainments on 16th August 2026 at Pai Convention Hall.",
+          "Connect • Collaborate • Grow. Hosted by Dot Entertainments on 30th August 2026 at Pai Convention Hall.",
       },
     ],
   }),
@@ -525,7 +525,7 @@ function Index() {
           </div>
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-foreground/[0.03] px-3.5 py-1 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
             <span className="h-1 w-1 rounded-full bg-accent" />
-            Creator Summit · 16th August 2026
+            Creator Summit · 30th August 2026
           </div>
         </FadeIn>
         <FadeIn delay={0.05}>
@@ -606,7 +606,7 @@ function Index() {
 
                 {/* CTA WhatsApp Button */}
                 <motion.a
-                  href="https://wa.me/919187127114?text=Hi,%20I'm%20interested%20in%20joining%20the%20Creator%20Summit%20on%2016th%20August%202026."
+                  href="https://wa.me/919187127114?text=Hi,%20I'm%20interested%20in%20joining%20the%20Creator%20Summit%20on%2030th%20August%202026."
                   target="_blank"
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.02 }}
@@ -647,7 +647,7 @@ function Index() {
                       You're registered!
                     </h3>
                     <p className="text-[15px] leading-relaxed text-muted-foreground max-w-sm mb-8">
-                      Thank you for registering. We'll send your creator pass details and updates for August 16th, 2026 to your email.
+                      Thank you for registering. We'll send your creator pass details and updates for August 30th, 2026 to your email.
                     </p>
                     <button
                       onClick={() => {
@@ -675,7 +675,7 @@ function Index() {
                     <div className="flex justify-center mb-6">
                       <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200/80 text-[11px] font-medium tracking-[0.15em] uppercase text-slate-500 shadow-sm">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#7C3AED]" />
-                        <span>16TH AUGUST 2026</span>
+                        <span>30TH AUGUST 2026</span>
                       </div>
                     </div>
 
